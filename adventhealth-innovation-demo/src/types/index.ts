@@ -108,3 +108,64 @@ export interface AgentStatusState {
   agent4: AgentStatus
   sora: AgentStatus
 }
+
+export interface Agent1Result {
+  detectedSystems?: Array<{
+    system: string
+    category: string
+    integration_level: string
+    typical_cost: number
+    typical_timeline_weeks: number
+    sme: string
+  }>
+  [key: string]: any
+}
+
+export interface Agent2Result {
+  architecture?: {
+    components?: string[]
+    integrations?: string[]
+    timeline?: string
+    [key: string]: any
+  }
+  [key: string]: any
+}
+
+export interface Agent3Result {
+  scoring?: {
+    feasibility_score?: number
+    technical_complexity?: string
+    resource_requirements?: string
+    risk_assessment?: string
+    [key: string]: any
+  }
+  [key: string]: any
+}
+
+export interface Agent4Result {
+  similarSolutions?: Array<{
+    title: string
+    similarity_score: number
+    description: string
+    [key: string]: any
+  }>
+  [key: string]: any
+}
+
+export interface SoraResult {
+  video?: {
+    url?: string
+    thumbnail?: string
+    status?: string
+    [key: string]: any
+  }
+  [key: string]: any
+}
+
+export interface AgentResults {
+  agent1?: Agent1Result
+  agent2?: Agent2Result
+  agent3?: Agent3Result
+  agent4?: Agent4Result
+  sora?: SoraResult
+}

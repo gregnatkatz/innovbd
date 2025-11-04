@@ -95,6 +95,20 @@ async def init_db():
                 createdAt TEXT
             )
         """)
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS agent_analyses (
+                idea_id TEXT PRIMARY KEY,
+                agent1_json TEXT,
+                agent2_json TEXT,
+                agent3_json TEXT,
+                agent4_json TEXT,
+                sora_json TEXT,
+                completed_count INTEGER DEFAULT 0,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (idea_id) REFERENCES ideas(id)
+            )
+        """)
         await db.commit()
 
 async def detect_systems(text: str) -> List[Dict[str, Any]]:
@@ -544,5 +558,84 @@ async def agent_sora_video(request: Dict[str, Any]):
         video_result = await generate_sora_video(idea_data, detected_systems)
         
         return {"video": video_result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/ideas/{idea_id}/analysis")
+async def save_agent_analysis(idea_id: str, request: Dict[str, Any]):
+    """Save agent analysis results for an idea"""
+    try:
+        agent1_data = request.get("agent1", {})
+        agent2_data = request.get("agent2", {})
+        agent3_data = request.get("agent3", {})
+        agent4_data = request.get("agent4", {})
+        sora_data = request.get("sora", {})
+        completed_count = request.get("completed_count", 0)
+        
+        async with aiosqlite.connect(DB_PATH) as db:
+            await db.execute("""
+                INSERT OR REPLACE INTO agent_analyses 
+                (idea_id, agent1_json, agent2_json, agent3_json, agent4_json, sora_json, completed_count, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
+                idea_id,
+                json.dumps(agent1_data) if agent1_data else None,
+                json.dumps(agent2_data) if agent2_data else None,
+                json.dumps(agent3_data) if agent3_data else None,
+                json.dumps(agent4_data) if agent4_data else None,
+                json.dumps(sora_data) if sora_data else None,
+                completed_count,
+                datetime.now().isoformat()
+            ))
+            await db.commit()
+            
+            cursor = await db.execute(
+                "SELECT * FROM agent_analyses WHERE idea_id = ?",
+                (idea_id,)
+            )
+            row = await cursor.fetchone()
+            
+            if row:
+                return {
+                    "idea_id": row[0],
+                    "agent1": json.loads(row[1]) if row[1] else None,
+                    "agent2": json.loads(row[2]) if row[2] else None,
+                    "agent3": json.loads(row[3]) if row[3] else None,
+                    "agent4": json.loads(row[4]) if row[4] else None,
+                    "sora": json.loads(row[5]) if row[5] else None,
+                    "completed_count": row[6],
+                    "created_at": row[7],
+                    "updated_at": row[8]
+                }
+            else:
+                raise HTTPException(status_code=404, detail="Analysis not found after save")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/ideas/{idea_id}/analysis")
+async def get_agent_analysis(idea_id: str):
+    """Retrieve agent analysis results for an idea"""
+    try:
+        async with aiosqlite.connect(DB_PATH) as db:
+            cursor = await db.execute(
+                "SELECT * FROM agent_analyses WHERE idea_id = ?",
+                (idea_id,)
+            )
+            row = await cursor.fetchone()
+            
+            if row:
+                return {
+                    "idea_id": row[0],
+                    "agent1": json.loads(row[1]) if row[1] else None,
+                    "agent2": json.loads(row[2]) if row[2] else None,
+                    "agent3": json.loads(row[3]) if row[3] else None,
+                    "agent4": json.loads(row[4]) if row[4] else None,
+                    "sora": json.loads(row[5]) if row[5] else None,
+                    "completed_count": row[6],
+                    "created_at": row[7],
+                    "updated_at": row[8]
+                }
+            else:
+                raise HTTPException(status_code=404, detail="Analysis not found")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

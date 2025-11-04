@@ -23,13 +23,14 @@ import {
   Gift
 } from 'lucide-react'
 
-import { Idea, Persona, CopilotMessage, AgentStatusState } from './types'
+import { Idea, Persona, CopilotMessage, AgentStatusState, AgentResults } from './types'
 import { successStories } from './data/constants'
 import { DashboardView } from './components/DashboardView'
 import { BrowseIdeasView } from './components/BrowseIdeasView'
 import { SubmitIdeaForm } from './components/SubmitIdeaForm'
 import { SuccessStoriesView } from './components/SuccessStoriesView'
 import { LeaderboardView } from './components/LeaderboardView'
+import { AnalysisDialog } from './components/AnalysisDialog'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
@@ -65,6 +66,10 @@ function App() {
     agent4: 'idle',
     sora: 'idle'
   })
+
+  const [agentResults, setAgentResults] = useState<AgentResults>({})
+  const [isAnalysisOpen, setIsAnalysisOpen] = useState(false)
+  const [submittedIdeaId, setSubmittedIdeaId] = useState<string | null>(null)
 
   const [newIdea, setNewIdea] = useState({
     title: '',
@@ -145,7 +150,9 @@ function App() {
       }
 
       console.log('Starting agent analysis...')
+      setSubmittedIdeaId(createdIdea.id)
       setAgentStatus({ agent1: 'analyzing', agent2: 'analyzing', agent3: 'analyzing', agent4: 'analyzing', sora: 'analyzing' })
+      setAgentResults({})
       console.log('All agents set to analyzing')
 
       fetch(`${API_URL}/api/agents/system-context`, {
@@ -157,6 +164,7 @@ function App() {
         .then(data => {
           console.log('Agent 1 complete:', data)
           setAgentStatus(prev => ({ ...prev, agent1: 'complete' }))
+          setAgentResults(prev => ({ ...prev, agent1: data }))
         })
         .catch(err => {
           console.error('Agent 1 error:', err)
@@ -172,6 +180,7 @@ function App() {
         .then(data => {
           console.log('Agent 2 complete:', data)
           setAgentStatus(prev => ({ ...prev, agent2: 'complete' }))
+          setAgentResults(prev => ({ ...prev, agent2: data }))
         })
         .catch(err => {
           console.error('Agent 2 error:', err)
@@ -187,6 +196,7 @@ function App() {
         .then(data => {
           console.log('Agent 3 complete:', data)
           setAgentStatus(prev => ({ ...prev, agent3: 'complete' }))
+          setAgentResults(prev => ({ ...prev, agent3: data }))
         })
         .catch(err => {
           console.error('Agent 3 error:', err)
@@ -202,6 +212,7 @@ function App() {
         .then(data => {
           console.log('Agent 4 complete:', data)
           setAgentStatus(prev => ({ ...prev, agent4: 'complete' }))
+          setAgentResults(prev => ({ ...prev, agent4: data }))
         })
         .catch(err => {
           console.error('Agent 4 error:', err)
@@ -217,6 +228,7 @@ function App() {
         .then(data => {
           console.log('Sora complete:', data)
           setAgentStatus(prev => ({ ...prev, sora: 'complete' }))
+          setAgentResults(prev => ({ ...prev, sora: data }))
         })
         .catch(err => {
           console.error('Sora error:', err)
@@ -465,7 +477,7 @@ function App() {
                 setNewIdea={setNewIdea}
                 onSubmit={handleSubmitIdea}
                 agentStatus={agentStatus}
-                onViewFullAnalysis={() => setCurrentView('browse')}
+                onViewFullAnalysis={() => setIsAnalysisOpen(true)}
               />
             )}
 
@@ -583,6 +595,14 @@ function App() {
           </Card>
         </div>
       )}
+
+      <AnalysisDialog
+        isOpen={isAnalysisOpen}
+        onClose={() => setIsAnalysisOpen(false)}
+        agentResults={agentResults}
+        ideaId={submittedIdeaId}
+        apiUrl={API_URL}
+      />
     </div>
   )
 }
