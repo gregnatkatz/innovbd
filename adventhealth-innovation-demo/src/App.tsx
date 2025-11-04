@@ -145,8 +145,8 @@ function App() {
       }
 
       console.log('Starting agent analysis...')
-      setAgentStatus({ agent1: 'analyzing', agent2: 'idle', agent3: 'idle', agent4: 'idle', sora: 'idle' })
-      console.log('Agent 1 status set to analyzing')
+      setAgentStatus({ agent1: 'analyzing', agent2: 'analyzing', agent3: 'analyzing', agent4: 'analyzing', sora: 'analyzing' })
+      console.log('All agents set to analyzing')
 
       fetch(`${API_URL}/api/agents/system-context`, {
         method: 'POST',
@@ -156,7 +156,7 @@ function App() {
         .then(res => res.json())
         .then(data => {
           console.log('Agent 1 complete:', data)
-          setAgentStatus(prev => ({ ...prev, agent1: 'complete', agent2: 'analyzing' }))
+          setAgentStatus(prev => ({ ...prev, agent1: 'complete' }))
         })
         .catch(err => {
           console.error('Agent 1 error:', err)
@@ -171,7 +171,7 @@ function App() {
         .then(res => res.json())
         .then(data => {
           console.log('Agent 2 complete:', data)
-          setAgentStatus(prev => ({ ...prev, agent2: 'complete', agent3: 'analyzing' }))
+          setAgentStatus(prev => ({ ...prev, agent2: 'complete' }))
         })
         .catch(err => {
           console.error('Agent 2 error:', err)
@@ -186,7 +186,7 @@ function App() {
         .then(res => res.json())
         .then(data => {
           console.log('Agent 3 complete:', data)
-          setAgentStatus(prev => ({ ...prev, agent3: 'complete', agent4: 'analyzing' }))
+          setAgentStatus(prev => ({ ...prev, agent3: 'complete' }))
         })
         .catch(err => {
           console.error('Agent 3 error:', err)
@@ -201,7 +201,7 @@ function App() {
         .then(res => res.json())
         .then(data => {
           console.log('Agent 4 complete:', data)
-          setAgentStatus(prev => ({ ...prev, agent4: 'complete', sora: 'analyzing' }))
+          setAgentStatus(prev => ({ ...prev, agent4: 'complete' }))
         })
         .catch(err => {
           console.error('Agent 4 error:', err)
