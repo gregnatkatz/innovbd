@@ -339,7 +339,6 @@ function App() {
   const [replyingTo, setReplyingTo] = useState<string | null>(null)
   const [replyContent, setReplyContent] = useState('')
   const [ideas, setIdeas] = useState<Idea[]>([])
-  const [loading, setLoading] = useState(true)
   const [showAIReview, setShowAIReview] = useState(false)
   
   const [agentStatus, setAgentStatus] = useState<Record<string, 'idle' | 'analyzing' | 'complete' | 'error'>>({
@@ -359,18 +358,17 @@ function App() {
     expectedBenefit: ''
   })
 
-  useEffect(() => {
-    const fetchIdeas = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/ideas`)
-        const data = await response.json()
-        setIdeas(data.ideas || [])
-        setLoading(false)
-      } catch (error) {
-        console.error('Error fetching ideas:', error)
-        setLoading(false)
-      }
+  const fetchIdeas = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/ideas`)
+      const data = await response.json()
+      setIdeas(data.ideas || [])
+    } catch (error) {
+      console.error('Error fetching ideas:', error)
     }
+  }
+
+  useEffect(() => {
     fetchIdeas()
   }, [])
 
@@ -485,7 +483,7 @@ function App() {
         })
           .then(res => res.json())
           .then(data => {
-            setAgentResults(prev => ({ ...prev, agent1: data }))
+            setAgentResults((prev: any) => ({ ...prev, agent1: data }))
             setAgentStatus(prev => ({ ...prev, agent1: 'complete' }))
           })
           .catch(err => {
@@ -501,7 +499,7 @@ function App() {
         })
           .then(res => res.json())
           .then(data => {
-            setAgentResults(prev => ({ ...prev, agent2: data }))
+            setAgentResults((prev: any) => ({ ...prev, agent2: data }))
             setAgentStatus(prev => ({ ...prev, agent2: 'complete' }))
           })
           .catch(err => {
@@ -517,7 +515,7 @@ function App() {
         })
           .then(res => res.json())
           .then(data => {
-            setAgentResults(prev => ({ ...prev, agent3: data }))
+            setAgentResults((prev: any) => ({ ...prev, agent3: data }))
             setAgentStatus(prev => ({ ...prev, agent3: 'complete' }))
           })
           .catch(err => {
@@ -533,7 +531,7 @@ function App() {
         })
           .then(res => res.json())
           .then(data => {
-            setAgentResults(prev => ({ ...prev, agent4: data }))
+            setAgentResults((prev: any) => ({ ...prev, agent4: data }))
             setAgentStatus(prev => ({ ...prev, agent4: 'complete' }))
           })
           .catch(err => {
@@ -549,7 +547,7 @@ function App() {
         })
           .then(res => res.json())
           .then(data => {
-            setAgentResults(prev => ({ ...prev, sora: data }))
+            setAgentResults((prev: any) => ({ ...prev, sora: data }))
             setAgentStatus(prev => ({ ...prev, sora: 'complete' }))
           })
           .catch(err => {
