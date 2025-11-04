@@ -35,7 +35,9 @@ import {
   Star,
   User,
   Brain,
-  Eye
+  Eye,
+  Trash2,
+  Video
 } from 'lucide-react'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
