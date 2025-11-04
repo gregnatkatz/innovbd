@@ -341,6 +341,15 @@ function App() {
   const [ideas, setIdeas] = useState<Idea[]>([])
   const [loading, setLoading] = useState(true)
   const [showAIReview, setShowAIReview] = useState(false)
+  
+  const [agentStatus, setAgentStatus] = useState<Record<string, 'idle' | 'analyzing' | 'complete' | 'error'>>({
+    agent1: 'idle',
+    agent2: 'idle',
+    agent3: 'idle',
+    agent4: 'idle',
+    sora: 'idle'
+  })
+  const [agentResults, setAgentResults] = useState<any>({})
 
   const [newIdea, setNewIdea] = useState({
     title: '',
@@ -419,6 +428,15 @@ function App() {
 
   const handleSubmitIdea = async () => {
     try {
+      setAgentStatus({
+        agent1: 'idle',
+        agent2: 'idle',
+        agent3: 'idle',
+        agent4: 'idle',
+        sora: 'idle'
+      })
+      setAgentResults({})
+      
       const response = await fetch(`${API_URL}/api/ideas`, {
         method: 'POST',
         headers: {
@@ -437,7 +455,7 @@ function App() {
       
       if (response.ok) {
         const createdIdea = await response.json()
-        alert('Idea submitted! Our AI has analyzed your submission with 4 intelligent agents:\n\n✓ System Context Engine detected relevant systems\n✓ Solution Discovery found similar ideas\n✓ Architecture Generator created implementation plan\n✓ Feasibility Scorer evaluated the idea\n\nView your idea to see the complete analysis!')
+        
         setNewIdea({
           title: '',
           description: '',
@@ -445,9 +463,101 @@ function App() {
           proposedSolution: '',
           expectedBenefit: ''
         })
-        await fetchIdeas()
-        setCurrentView('browse')
         setSelectedIdea(createdIdea)
+        setCurrentView('browse')
+        
+        const ideaPayload = {
+          idea: {
+            id: createdIdea.id,
+            title: newIdea.title,
+            description: newIdea.description,
+            problemStatement: newIdea.problemStatement,
+            proposedSolution: newIdea.proposedSolution,
+            expectedBenefit: newIdea.expectedBenefit
+          }
+        }
+        
+        setAgentStatus(prev => ({ ...prev, agent1: 'analyzing' }))
+        fetch(`${API_URL}/api/agents/system-context`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(ideaPayload)
+        })
+          .then(res => res.json())
+          .then(data => {
+            setAgentResults(prev => ({ ...prev, agent1: data }))
+            setAgentStatus(prev => ({ ...prev, agent1: 'complete' }))
+          })
+          .catch(err => {
+            console.error('Agent 1 error:', err)
+            setAgentStatus(prev => ({ ...prev, agent1: 'error' }))
+          })
+        
+        setAgentStatus(prev => ({ ...prev, agent2: 'analyzing' }))
+        fetch(`${API_URL}/api/agents/architecture-generator`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(ideaPayload)
+        })
+          .then(res => res.json())
+          .then(data => {
+            setAgentResults(prev => ({ ...prev, agent2: data }))
+            setAgentStatus(prev => ({ ...prev, agent2: 'complete' }))
+          })
+          .catch(err => {
+            console.error('Agent 2 error:', err)
+            setAgentStatus(prev => ({ ...prev, agent2: 'error' }))
+          })
+        
+        setAgentStatus(prev => ({ ...prev, agent3: 'analyzing' }))
+        fetch(`${API_URL}/api/agents/feasibility-scorer`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(ideaPayload)
+        })
+          .then(res => res.json())
+          .then(data => {
+            setAgentResults(prev => ({ ...prev, agent3: data }))
+            setAgentStatus(prev => ({ ...prev, agent3: 'complete' }))
+          })
+          .catch(err => {
+            console.error('Agent 3 error:', err)
+            setAgentStatus(prev => ({ ...prev, agent3: 'error' }))
+          })
+        
+        setAgentStatus(prev => ({ ...prev, agent4: 'analyzing' }))
+        fetch(`${API_URL}/api/agents/solution-discovery`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(ideaPayload)
+        })
+          .then(res => res.json())
+          .then(data => {
+            setAgentResults(prev => ({ ...prev, agent4: data }))
+            setAgentStatus(prev => ({ ...prev, agent4: 'complete' }))
+          })
+          .catch(err => {
+            console.error('Agent 4 error:', err)
+            setAgentStatus(prev => ({ ...prev, agent4: 'error' }))
+          })
+        
+        setAgentStatus(prev => ({ ...prev, sora: 'analyzing' }))
+        fetch(`${API_URL}/api/agents/sora-video`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(ideaPayload)
+        })
+          .then(res => res.json())
+          .then(data => {
+            setAgentResults(prev => ({ ...prev, sora: data }))
+            setAgentStatus(prev => ({ ...prev, sora: 'complete' }))
+          })
+          .catch(err => {
+            console.error('Sora error:', err)
+            setAgentStatus(prev => ({ ...prev, sora: 'error' }))
+          })
+        
+        await fetchIdeas()
       } else {
         alert('Failed to submit idea. Please try again.')
       }
@@ -1537,10 +1647,17 @@ function App() {
 
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold flex items-center gap-2">
-                      <Sparkles className="w-5 h-5 text-blue-500" />
-                      AI Analysis
-                    </h4>
+                    <div className="flex items-center gap-4">
+                      <h4 className="font-semibold flex items-center gap-2">
+                        <Sparkles className="w-5 h-5 text-blue-500" />
+                        AI Analysis
+                      </h4>
+                      {(agentStatus.agent1 !== 'idle' || agentStatus.agent2 !== 'idle' || agentStatus.agent3 !== 'idle' || agentStatus.agent4 !== 'idle' || agentStatus.sora !== 'idle') && (
+                        <Badge variant="outline" className="text-xs">
+                          Agents: {[agentStatus.agent1, agentStatus.agent2, agentStatus.agent3, agentStatus.agent4, agentStatus.sora].filter(s => s === 'complete').length}/5 complete
+                        </Badge>
+                      )}
+                    </div>
                     {persona === 'executive' && (
                       <Button
                         variant="outline"
@@ -1589,12 +1706,33 @@ function App() {
                       <p className="text-sm text-slate-300">{selectedIdea.aiAnalysis.aiRecommendations}</p>
                     </div>
 
-                    {selectedIdea.aiAnalysis.detectedSystems && selectedIdea.aiAnalysis.detectedSystems.length > 0 && (
-                      <div className="p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
-                        <div className="text-sm text-purple-400 mb-2 font-semibold flex items-center gap-2">
-                          <Brain className="w-4 h-4" />
-                          Agent 1: Detected Systems
+                    <div className="p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                      <div className="text-sm text-purple-400 mb-2 font-semibold flex items-center gap-2">
+                        <Brain className="w-4 h-4" />
+                        Agent 1: System Context Engine
+                        {agentStatus.agent1 === 'analyzing' && <span className="text-xs text-slate-400 ml-2">Analyzing...</span>}
+                        {agentStatus.agent1 === 'complete' && <span className="text-green-400 ml-2">✓</span>}
+                        {agentStatus.agent1 === 'error' && <span className="text-red-400 ml-2">✗</span>}
+                      </div>
+                      {agentStatus.agent1 === 'analyzing' && (
+                        <div className="text-sm text-slate-400">Detecting healthcare systems mentioned in your idea...</div>
+                      )}
+                      {agentStatus.agent1 === 'complete' && agentResults.agent1?.systems && (
+                        <div className="space-y-2">
+                          {agentResults.agent1.systems.map((system: any, idx: number) => (
+                            <div key={idx} className="p-2 rounded bg-slate-800/50 text-sm">
+                              <div className="font-semibold text-slate-200">{system.system}</div>
+                              <div className="text-xs text-slate-400 mt-1">{system.category}</div>
+                              {persona === 'executive' && (
+                                <div className="text-xs text-slate-400 mt-1">
+                                  Integration: ${(system.typical_cost / 1000).toFixed(0)}K, {system.typical_timeline_weeks} weeks • SME: {system.sme}
+                                </div>
+                              )}
+                            </div>
+                          ))}
                         </div>
+                      )}
+                      {agentStatus.agent1 === 'complete' && !agentResults.agent1?.systems && selectedIdea.aiAnalysis.detectedSystems && selectedIdea.aiAnalysis.detectedSystems.length > 0 && (
                         <div className="space-y-2">
                           {selectedIdea.aiAnalysis.detectedSystems.map((system, idx) => (
                             <div key={idx} className="p-2 rounded bg-slate-800/50 text-sm">
@@ -1608,8 +1746,131 @@ function App() {
                             </div>
                           ))}
                         </div>
+                      )}
+                      {agentStatus.agent1 === 'error' && (
+                        <div className="text-sm text-red-400">Failed to detect systems. Please try again.</div>
+                      )}
+                    </div>
+
+                    <div className="p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                      <div className="text-sm text-blue-400 mb-2 font-semibold flex items-center gap-2">
+                        <Brain className="w-4 h-4" />
+                        Agent 2: Solution Architecture Generator
+                        {agentStatus.agent2 === 'analyzing' && <span className="text-xs text-slate-400 ml-2">Analyzing...</span>}
+                        {agentStatus.agent2 === 'complete' && <span className="text-green-400 ml-2">✓</span>}
+                        {agentStatus.agent2 === 'error' && <span className="text-red-400 ml-2">✗</span>}
                       </div>
-                    )}
+                      {agentStatus.agent2 === 'analyzing' && (
+                        <div className="text-sm text-slate-400">Generating implementation blueprint with phases and costs...</div>
+                      )}
+                      {agentStatus.agent2 === 'complete' && agentResults.agent2?.architecture && (
+                        <div className="space-y-2 text-sm">
+                          <div className="text-slate-300">{agentResults.agent2.architecture.summary}</div>
+                          {persona === 'executive' && (
+                            <>
+                              <div className="text-slate-400">Total Cost: ${(agentResults.agent2.architecture.total_cost_low / 1000).toFixed(0)}K - ${(agentResults.agent2.architecture.total_cost_high / 1000).toFixed(0)}K</div>
+                              <div className="text-slate-400">Timeline: {agentResults.agent2.architecture.total_timeline_weeks} weeks</div>
+                            </>
+                          )}
+                        </div>
+                      )}
+                      {agentStatus.agent2 === 'error' && (
+                        <div className="text-sm text-red-400">Failed to generate architecture. Please try again.</div>
+                      )}
+                    </div>
+
+                    <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                      <div className="text-sm text-green-400 mb-2 font-semibold flex items-center gap-2">
+                        <Brain className="w-4 h-4" />
+                        Agent 3: Feasibility Scorer with Reasoning
+                        {agentStatus.agent3 === 'analyzing' && <span className="text-xs text-slate-400 ml-2">Analyzing...</span>}
+                        {agentStatus.agent3 === 'complete' && <span className="text-green-400 ml-2">✓</span>}
+                        {agentStatus.agent3 === 'error' && <span className="text-red-400 ml-2">✗</span>}
+                      </div>
+                      {agentStatus.agent3 === 'analyzing' && (
+                        <div className="text-sm text-slate-400">Evaluating feasibility across multiple dimensions...</div>
+                      )}
+                      {agentStatus.agent3 === 'complete' && agentResults.agent3?.scores && (
+                        <div className="space-y-2 text-sm">
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <span className="text-slate-400">Technical: </span>
+                              <span className="font-semibold">{agentResults.agent3.scores.technical}/5</span>
+                            </div>
+                            <div>
+                              <span className="text-slate-400">Operational: </span>
+                              <span className="font-semibold">{agentResults.agent3.scores.operational}/5</span>
+                            </div>
+                            <div>
+                              <span className="text-slate-400">Financial: </span>
+                              <span className="font-semibold">{agentResults.agent3.scores.financial}/5</span>
+                            </div>
+                            <div>
+                              <span className="text-slate-400">Overall: </span>
+                              <span className="font-semibold">{agentResults.agent3.scores.overall}/5</span>
+                            </div>
+                          </div>
+                          {agentResults.agent3.reasoning && (
+                            <div className="text-slate-300 mt-2">{agentResults.agent3.reasoning}</div>
+                          )}
+                        </div>
+                      )}
+                      {agentStatus.agent3 === 'error' && (
+                        <div className="text-sm text-red-400">Failed to score feasibility. Please try again.</div>
+                      )}
+                    </div>
+
+                    <div className="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                      <div className="text-sm text-yellow-400 mb-2 font-semibold flex items-center gap-2">
+                        <Brain className="w-4 h-4" />
+                        Agent 4: Internal Solution Discovery Engine
+                        {agentStatus.agent4 === 'analyzing' && <span className="text-xs text-slate-400 ml-2">Analyzing...</span>}
+                        {agentStatus.agent4 === 'complete' && <span className="text-green-400 ml-2">✓</span>}
+                        {agentStatus.agent4 === 'error' && <span className="text-red-400 ml-2">✗</span>}
+                      </div>
+                      {agentStatus.agent4 === 'analyzing' && (
+                        <div className="text-sm text-slate-400">Finding similar solutions across hospitals and matching mentors...</div>
+                      )}
+                      {agentStatus.agent4 === 'complete' && agentResults.agent4?.similar_solutions && (
+                        <div className="space-y-2">
+                          {agentResults.agent4.similar_solutions.map((solution: any, idx: number) => (
+                            <div key={idx} className="p-2 rounded bg-slate-800/50 text-sm">
+                              <div className="font-semibold text-slate-200">{solution.hospital}</div>
+                              <div className="text-xs text-slate-400 mt-1">{solution.description}</div>
+                              <div className="text-xs text-slate-400 mt-1">Contact: {solution.contact}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {agentStatus.agent4 === 'error' && (
+                        <div className="text-sm text-red-400">Failed to find similar solutions. Please try again.</div>
+                      )}
+                    </div>
+
+                    <div className="p-3 rounded-lg bg-pink-500/10 border border-pink-500/20">
+                      <div className="text-sm text-pink-400 mb-2 font-semibold flex items-center gap-2">
+                        <Brain className="w-4 h-4" />
+                        Sora: Video Generation
+                        {agentStatus.sora === 'analyzing' && <span className="text-xs text-slate-400 ml-2">Generating...</span>}
+                        {agentStatus.sora === 'complete' && <span className="text-green-400 ml-2">✓</span>}
+                        {agentStatus.sora === 'error' && <span className="text-red-400 ml-2">✗</span>}
+                      </div>
+                      {agentStatus.sora === 'analyzing' && (
+                        <div className="text-sm text-slate-400">Creating video demonstration of your solution...</div>
+                      )}
+                      {agentStatus.sora === 'complete' && agentResults.sora?.job_id && (
+                        <div className="space-y-2 text-sm">
+                          <div className="text-slate-300">Video generation job submitted successfully!</div>
+                          <div className="text-slate-400">Job ID: {agentResults.sora.job_id}</div>
+                          {agentResults.sora.status && (
+                            <div className="text-slate-400">Status: {agentResults.sora.status}</div>
+                          )}
+                        </div>
+                      )}
+                      {agentStatus.sora === 'error' && (
+                        <div className="text-sm text-red-400">Failed to generate video. Please try again.</div>
+                      )}
+                    </div>
 
                     {persona === 'executive' && selectedIdea.aiAnalysis.executiveAnalysis && showAIReview && (
                       <>
