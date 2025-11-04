@@ -240,6 +240,17 @@ async def create_idea(idea: IdeaCreate):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.delete("/api/ideas/{idea_id}")
+async def delete_idea(idea_id: str):
+    try:
+        async with aiosqlite.connect(DB_PATH) as db:
+            await db.execute("DELETE FROM comments WHERE ideaId = ?", (idea_id,))
+            await db.execute("DELETE FROM ideas WHERE id = ?", (idea_id,))
+            await db.commit()
+        return {"status": "deleted", "id": idea_id}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/ideas/{idea_id}/comments")
 async def get_comments(idea_id: str):
     try:

@@ -454,24 +454,24 @@ function App() {
       if (response.ok) {
         const createdIdea = await response.json()
         
-        setNewIdea({
-          title: '',
-          description: '',
-          problemStatement: '',
-          proposedSolution: '',
-          expectedBenefit: ''
-        })
+        const submittedIdeaData = {
+          title: newIdea.title,
+          description: newIdea.description,
+          problemStatement: newIdea.problemStatement,
+          proposedSolution: newIdea.proposedSolution,
+          expectedBenefit: newIdea.expectedBenefit
+        }
+        
         setSelectedIdea(createdIdea)
-        setCurrentView('browse')
         
         const ideaPayload = {
           idea: {
             id: createdIdea.id,
-            title: newIdea.title,
-            description: newIdea.description,
-            problemStatement: newIdea.problemStatement,
-            proposedSolution: newIdea.proposedSolution,
-            expectedBenefit: newIdea.expectedBenefit
+            title: submittedIdeaData.title,
+            description: submittedIdeaData.description,
+            problemStatement: submittedIdeaData.problemStatement,
+            proposedSolution: submittedIdeaData.proposedSolution,
+            expectedBenefit: submittedIdeaData.expectedBenefit
           }
         }
         
@@ -1048,16 +1048,43 @@ function App() {
                               {getIdeaDescription(idea)}
                             </CardDescription>
                           </div>
-                          <Badge
-                            variant={
-                              idea.status === 'Approved' ? 'default' :
-                              idea.status === 'In Review' ? 'secondary' :
-                              'outline'
-                            }
-                            className="flex-shrink-0"
-                          >
-                            {idea.status}
-                          </Badge>
+                          <div className="flex items-center gap-2">
+                            <Badge
+                              variant={
+                                idea.status === 'Approved' ? 'default' :
+                                idea.status === 'In Review' ? 'secondary' :
+                                'outline'
+                              }
+                              className="flex-shrink-0"
+                            >
+                              {idea.status}
+                            </Badge>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                if (confirm('Delete this idea? This cannot be undone.')) {
+                                  fetch(`${API_URL}/api/ideas/${idea.id}`, {
+                                    method: 'DELETE'
+                                  })
+                                    .then(() => {
+                                      fetchIdeas()
+                                      if (selectedIdea?.id === idea.id) {
+                                        setSelectedIdea(null)
+                                      }
+                                    })
+                                    .catch(err => {
+                                      console.error('Delete error:', err)
+                                      alert('Failed to delete idea. Please try again.')
+                                    })
+                                }
+                              }}
+                              className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </div>
                       </CardHeader>
                       <CardContent>
@@ -1220,6 +1247,105 @@ function App() {
                     </div>
                   </CardContent>
                 </Card>
+
+                {/* Agent Analysis Status - Show after submission */}
+                {selectedIdea && (agentStatus.agent1 !== 'idle' || agentStatus.agent2 !== 'idle' || agentStatus.agent3 !== 'idle' || agentStatus.agent4 !== 'idle' || agentStatus.sora !== 'idle') && (
+                  <Card className="bg-slate-900 border-slate-800 mt-6">
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Sparkles className="w-6 h-6 text-blue-500" />
+                          <div>
+                            <CardTitle>AI Analysis in Progress</CardTitle>
+                            <CardDescription>Our AI agents are analyzing your idea...</CardDescription>
+                          </div>
+                        </div>
+                        <Badge variant="outline" className="text-sm">
+                          Agents: {[agentStatus.agent1, agentStatus.agent2, agentStatus.agent3, agentStatus.agent4, agentStatus.sora].filter(s => s === 'complete').length}/5 complete
+                        </Badge>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-3">
+                      {/* Agent 1: System Context Engine */}
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-purple-500/10 border border-purple-500/20">
+                        <div className="flex items-center gap-2">
+                          <Brain className="w-4 h-4 text-purple-400" />
+                          <span className="text-sm font-medium">Agent 1: System Context Engine</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {agentStatus.agent1 === 'analyzing' && <span className="text-xs text-slate-400">Analyzing...</span>}
+                          {agentStatus.agent1 === 'complete' && <span className="text-green-400">✓ Complete</span>}
+                          {agentStatus.agent1 === 'error' && <span className="text-red-400">✗ Error</span>}
+                        </div>
+                      </div>
+
+                      {/* Agent 2: Solution Architecture Generator */}
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                        <div className="flex items-center gap-2">
+                          <Brain className="w-4 h-4 text-blue-400" />
+                          <span className="text-sm font-medium">Agent 2: Solution Architecture Generator</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {agentStatus.agent2 === 'analyzing' && <span className="text-xs text-slate-400">Analyzing...</span>}
+                          {agentStatus.agent2 === 'complete' && <span className="text-green-400">✓ Complete</span>}
+                          {agentStatus.agent2 === 'error' && <span className="text-red-400">✗ Error</span>}
+                        </div>
+                      </div>
+
+                      {/* Agent 3: Feasibility Scorer */}
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                        <div className="flex items-center gap-2">
+                          <Brain className="w-4 h-4 text-green-400" />
+                          <span className="text-sm font-medium">Agent 3: Feasibility Scorer with Reasoning</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {agentStatus.agent3 === 'analyzing' && <span className="text-xs text-slate-400">Analyzing...</span>}
+                          {agentStatus.agent3 === 'complete' && <span className="text-green-400">✓ Complete</span>}
+                          {agentStatus.agent3 === 'error' && <span className="text-red-400">✗ Error</span>}
+                        </div>
+                      </div>
+
+                      {/* Agent 4: Internal Solution Discovery */}
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                        <div className="flex items-center gap-2">
+                          <Brain className="w-4 h-4 text-yellow-400" />
+                          <span className="text-sm font-medium">Agent 4: Internal Solution Discovery Engine</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {agentStatus.agent4 === 'analyzing' && <span className="text-xs text-slate-400">Analyzing...</span>}
+                          {agentStatus.agent4 === 'complete' && <span className="text-green-400">✓ Complete</span>}
+                          {agentStatus.agent4 === 'error' && <span className="text-red-400">✗ Error</span>}
+                        </div>
+                      </div>
+
+                      {/* Sora: Video Generation */}
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-pink-500/10 border border-pink-500/20">
+                        <div className="flex items-center gap-2">
+                          <Video className="w-4 h-4 text-pink-400" />
+                          <span className="text-sm font-medium">Sora: Video Generation</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {agentStatus.sora === 'analyzing' && <span className="text-xs text-slate-400">Generating...</span>}
+                          {agentStatus.sora === 'complete' && <span className="text-green-400">✓ Complete</span>}
+                          {agentStatus.sora === 'error' && <span className="text-red-400">✗ Error</span>}
+                        </div>
+                      </div>
+
+                      {/* View Full Analysis Button */}
+                      {[agentStatus.agent1, agentStatus.agent2, agentStatus.agent3, agentStatus.agent4, agentStatus.sora].filter(s => s === 'complete').length === 5 && (
+                        <div className="pt-4">
+                          <Button
+                            onClick={() => setCurrentView('browse')}
+                            className="w-full"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            View Full Analysis
+                          </Button>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             )}
 
