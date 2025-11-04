@@ -213,28 +213,94 @@ export function AnalysisDialog({ isOpen, onClose, agentResults, ideaId, apiUrl }
           {agentResults.sora && (
             <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
               <h3 className="text-lg font-semibold text-pink-400 mb-3 flex items-center gap-2">
-                <CheckCircle className="w-5 h-5" />
+                {agentResults.sora.video?.status === 'preprocessing' || agentResults.sora.video?.status === 'generating' ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : agentResults.sora.video?.status === 'error' ? (
+                  <AlertCircle className="w-5 h-5" />
+                ) : (
+                  <CheckCircle className="w-5 h-5" />
+                )}
                 Sora: Video Generation
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {agentResults.sora.video ? (
                   <div>
-                    {agentResults.sora.video.url && (
-                      <p className="text-slate-300 mb-2">
-                        <span className="font-medium">Video URL:</span>{' '}
-                        <a href={agentResults.sora.video.url} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
-                          {agentResults.sora.video.url}
-                        </a>
-                      </p>
-                    )}
                     {agentResults.sora.video.status && (
-                      <p className="text-slate-300 mb-2">
-                        <span className="font-medium">Status:</span> {agentResults.sora.video.status}
-                      </p>
+                      <div className="mb-3">
+                        <span className="text-sm font-medium text-slate-300">Status: </span>
+                        <span className={`text-sm ${
+                          agentResults.sora.video.status === 'preprocessing' || agentResults.sora.video.status === 'generating' 
+                            ? 'text-yellow-400' 
+                            : agentResults.sora.video.status === 'error' 
+                            ? 'text-red-400' 
+                            : 'text-green-400'
+                        }`}>
+                          {agentResults.sora.video.status}
+                        </span>
+                        {agentResults.sora.video.job_id && (
+                          <p className="text-xs text-slate-400 mt-1">Job ID: {agentResults.sora.video.job_id}</p>
+                        )}
+                      </div>
                     )}
-                    <pre className="text-xs text-slate-300 bg-slate-900 p-3 rounded overflow-x-auto">
-                      {JSON.stringify(agentResults.sora, null, 2)}
-                    </pre>
+                    
+                    {agentResults.sora.video.generations && agentResults.sora.video.generations.length > 0 && (
+                      <div className="space-y-3">
+                        {agentResults.sora.video.generations.map((gen: any, idx: number) => (
+                          <div key={idx} className="bg-slate-900 rounded-lg p-3 border border-slate-600">
+                            {gen.url && (
+                              <div className="mb-2">
+                                <video 
+                                  controls 
+                                  className="w-full rounded-lg"
+                                  poster={gen.thumbnail}
+                                >
+                                  <source src={gen.url} type="video/mp4" />
+                                  Your browser does not support the video tag.
+                                </video>
+                              </div>
+                            )}
+                            {gen.thumbnail && !gen.url && (
+                              <img src={gen.thumbnail} alt="Video thumbnail" className="w-full rounded-lg mb-2" />
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {agentResults.sora.video.url && (
+                      <div className="bg-slate-900 rounded-lg p-3 border border-slate-600">
+                        <video 
+                          controls 
+                          className="w-full rounded-lg"
+                        >
+                          <source src={agentResults.sora.video.url} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
+                      </div>
+                    )}
+
+                    {(agentResults.sora.video.status === 'preprocessing' || agentResults.sora.video.status === 'generating') && (
+                      <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-3">
+                        <p className="text-sm text-blue-300">
+                          Video is being generated. This typically takes 2-5 minutes. Check back later to view the video.
+                        </p>
+                      </div>
+                    )}
+
+                    {agentResults.sora.video.message && (
+                      <div className="bg-slate-900 rounded-lg p-3 border border-slate-600">
+                        <p className="text-xs text-slate-400">{agentResults.sora.video.message}</p>
+                      </div>
+                    )}
+
+                    <details className="mt-3">
+                      <summary className="text-xs text-slate-400 cursor-pointer hover:text-slate-300">
+                        View raw response
+                      </summary>
+                      <pre className="text-xs text-slate-300 bg-slate-900 p-3 rounded overflow-x-auto mt-2">
+                        {JSON.stringify(agentResults.sora, null, 2)}
+                      </pre>
+                    </details>
                   </div>
                 ) : (
                   <pre className="text-xs text-slate-300 bg-slate-900 p-3 rounded overflow-x-auto">

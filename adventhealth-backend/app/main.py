@@ -481,13 +481,15 @@ async def generate_sora_video(idea_data: Dict[str, Any], detected_systems: List[
                 }
             )
             
-            if response.status_code == 202:
+            if response.status_code in [201, 202]:
                 job_data = response.json()
                 return {
-                    "status": "generating",
+                    "status": job_data.get("status", "generating"),
                     "job_id": job_data.get("id"),
                     "prompt": prompt,
-                    "estimated_time": "2-5 minutes"
+                    "estimated_time": "2-5 minutes",
+                    "created_at": job_data.get("created_at"),
+                    "generations": job_data.get("generations", [])
                 }
             else:
                 return {
