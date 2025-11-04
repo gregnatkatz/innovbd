@@ -1,6 +1,6 @@
-import { X, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
+import { X, CheckCircle, AlertCircle, Loader2, RefreshCw } from 'lucide-react'
 import { AgentResults } from '../types'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 interface AnalysisDialogProps {
   isOpen: boolean
@@ -13,6 +13,53 @@ interface AnalysisDialogProps {
 export function AnalysisDialog({ isOpen, onClose, agentResults, ideaId, apiUrl }: AnalysisDialogProps) {
   const [isSaving, setIsSaving] = useState(false)
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [soraData, setSoraData] = useState(agentResults.sora)
+  const [isRefreshing, setIsRefreshing] = useState(false)
+
+  useEffect(() => {
+    setSoraData(agentResults.sora)
+  }, [agentResults.sora])
+
+  useEffect(() => {
+    if (!isOpen || !soraData?.video?.job_id) return
+
+    const status = soraData.video.status
+    if (status === 'completed' || status === 'error' || status === 'failed') return
+
+    const pollInterval = setInterval(async () => {
+      await checkSoraStatus()
+    }, 15000)
+
+    return () => clearInterval(pollInterval)
+  }, [isOpen, soraData, apiUrl])
+
+  const checkSoraStatus = async () => {
+    if (!soraData?.video?.job_id) return
+
+    try {
+      const response = await fetch(`${apiUrl}/api/agents/sora-status/${soraData.video.job_id}`)
+      if (!response.ok) return
+
+      const data = await response.json()
+      setSoraData({
+        ...soraData,
+        video: {
+          ...soraData.video,
+          status: data.status,
+          generations: data.generations || [],
+          error: data.error
+        }
+      })
+    } catch (error) {
+      console.error('Error checking Sora status:', error)
+    }
+  }
+
+  const handleRefreshStatus = async () => {
+    setIsRefreshing(true)
+    await checkSoraStatus()
+    setIsRefreshing(false)
+  }
 
   if (!isOpen) return null
 
@@ -210,12 +257,12 @@ export function AnalysisDialog({ isOpen, onClose, agentResults, ideaId, apiUrl }
             </div>
           )}
 
-          {agentResults.sora && (
+          {soraData && (
             <div className="bg-slate-800 rounded-lg p-4 border border-slate-700">
               <h3 className="text-lg font-semibold text-pink-400 mb-3 flex items-center gap-2">
-                {agentResults.sora.video?.status === 'preprocessing' || agentResults.sora.video?.status === 'generating' ? (
+                {soraData.video?.status === 'preprocessing' || soraData.video?.status === 'generating' ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
-                ) : agentResults.sora.video?.status === 'error' ? (
+                ) : soraData.video?.status === 'error' ? (
                   <AlertCircle className="w-5 h-5" />
                 ) : (
                   <CheckCircle className="w-5 h-5" />
@@ -223,29 +270,41 @@ export function AnalysisDialog({ isOpen, onClose, agentResults, ideaId, apiUrl }
                 Sora: Video Generation
               </h3>
               <div className="space-y-3">
-                {agentResults.sora.video ? (
+                {soraData.video ? (
                   <div>
-                    {agentResults.sora.video.status && (
-                      <div className="mb-3">
-                        <span className="text-sm font-medium text-slate-300">Status: </span>
-                        <span className={`text-sm ${
-                          agentResults.sora.video.status === 'preprocessing' || agentResults.sora.video.status === 'generating' 
-                            ? 'text-yellow-400' 
-                            : agentResults.sora.video.status === 'error' 
-                            ? 'text-red-400' 
-                            : 'text-green-400'
-                        }`}>
-                          {agentResults.sora.video.status}
-                        </span>
-                        {agentResults.sora.video.job_id && (
-                          <p className="text-xs text-slate-400 mt-1">Job ID: {agentResults.sora.video.job_id}</p>
+                    {soraData.video.status && (
+                      <div className="mb-3 flex items-center justify-between">
+                        <div>
+                          <span className="text-sm font-medium text-slate-300">Status: </span>
+                          <span className={`text-sm ${
+                            soraData.video.status === 'preprocessing' || soraData.video.status === 'generating' 
+                              ? 'text-yellow-400' 
+                              : soraData.video.status === 'error' 
+                              ? 'text-red-400' 
+                              : 'text-green-400'
+                          }`}>
+                            {soraData.video.status}
+                          </span>
+                          {soraData.video.job_id && (
+                            <p className="text-xs text-slate-400 mt-1">Job ID: {soraData.video.job_id}</p>
+                          )}
+                        </div>
+                        {(soraData.video.status === 'preprocessing' || soraData.video.status === 'generating') && (
+                          <button
+                            onClick={handleRefreshStatus}
+                            disabled={isRefreshing}
+                            className="flex items-center gap-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded transition-colors disabled:opacity-50"
+                          >
+                            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                            {isRefreshing ? 'Checking...' : 'Refresh Status'}
+                          </button>
                         )}
                       </div>
                     )}
                     
-                    {agentResults.sora.video.generations && agentResults.sora.video.generations.length > 0 && (
+                    {soraData.video.generations && soraData.video.generations.length > 0 && (
                       <div className="space-y-3">
-                        {agentResults.sora.video.generations.map((gen: any, idx: number) => (
+                        {soraData.video.generations.map((gen: any, idx: number) => (
                           <div key={idx} className="bg-slate-900 rounded-lg p-3 border border-slate-600">
                             {gen.url && (
                               <div className="mb-2">
@@ -267,29 +326,29 @@ export function AnalysisDialog({ isOpen, onClose, agentResults, ideaId, apiUrl }
                       </div>
                     )}
 
-                    {agentResults.sora.video.url && (
+                    {soraData.video.url && (
                       <div className="bg-slate-900 rounded-lg p-3 border border-slate-600">
                         <video 
                           controls 
                           className="w-full rounded-lg"
                         >
-                          <source src={agentResults.sora.video.url} type="video/mp4" />
+                          <source src={soraData.video.url} type="video/mp4" />
                           Your browser does not support the video tag.
                         </video>
                       </div>
                     )}
 
-                    {(agentResults.sora.video.status === 'preprocessing' || agentResults.sora.video.status === 'generating') && (
+                    {(soraData.video.status === 'preprocessing' || soraData.video.status === 'generating') && (
                       <div className="bg-blue-900/20 border border-blue-700 rounded-lg p-3">
                         <p className="text-sm text-blue-300">
-                          Video is being generated. This typically takes 2-5 minutes. Check back later to view the video.
+                          Video is being generated. This typically takes 2-5 minutes. The status will automatically refresh every 15 seconds.
                         </p>
                       </div>
                     )}
 
-                    {agentResults.sora.video.message && (
+                    {soraData.video.message && (
                       <div className="bg-slate-900 rounded-lg p-3 border border-slate-600">
-                        <p className="text-xs text-slate-400">{agentResults.sora.video.message}</p>
+                        <p className="text-xs text-slate-400">{soraData.video.message}</p>
                       </div>
                     )}
 
@@ -298,13 +357,13 @@ export function AnalysisDialog({ isOpen, onClose, agentResults, ideaId, apiUrl }
                         View raw response
                       </summary>
                       <pre className="text-xs text-slate-300 bg-slate-900 p-3 rounded overflow-x-auto mt-2">
-                        {JSON.stringify(agentResults.sora, null, 2)}
+                        {JSON.stringify(soraData, null, 2)}
                       </pre>
                     </details>
                   </div>
                 ) : (
                   <pre className="text-xs text-slate-300 bg-slate-900 p-3 rounded overflow-x-auto">
-                    {JSON.stringify(agentResults.sora, null, 2)}
+                    {JSON.stringify(soraData, null, 2)}
                   </pre>
                 )}
               </div>

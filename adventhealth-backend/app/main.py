@@ -565,6 +565,39 @@ async def agent_sora_video(request: Dict[str, Any]):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/agents/sora-status/{job_id}")
+async def get_sora_status(job_id: str):
+    """Check the status of a Sora video generation job"""
+    try:
+        if not SORA_ENDPOINT or not SORA_API_KEY:
+            raise HTTPException(status_code=500, detail="Sora API not configured")
+        
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get(
+                f"{SORA_ENDPOINT}/{job_id}?api-version=preview",
+                headers={
+                    "Api-key": SORA_API_KEY
+                }
+            )
+            
+            if response.status_code == 200:
+                job_data = response.json()
+                return {
+                    "status": job_data.get("status", "unknown"),
+                    "job_id": job_data.get("id"),
+                    "created_at": job_data.get("created_at"),
+                    "generations": job_data.get("generations", []),
+                    "error": job_data.get("error")
+                }
+            else:
+                return {
+                    "status": "error",
+                    "message": f"Failed to check status: {response.status_code}",
+                    "job_id": job_id
+                }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/ideas/{idea_id}/analysis")
 async def save_agent_analysis(idea_id: str, request: Dict[str, Any]):
     """Save agent analysis results for an idea"""
