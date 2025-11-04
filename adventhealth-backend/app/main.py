@@ -468,14 +468,16 @@ async def generate_sora_video(idea_data: Dict[str, Any], detected_systems: List[
             response = await client.post(
                 f"{SORA_ENDPOINT}?api-version=preview",
                 headers={
-                    "api-key": SORA_API_KEY,
+                    "Api-key": SORA_API_KEY,
                     "Content-Type": "application/json"
                 },
                 json={
                     "model": "sora",
                     "prompt": prompt,
-                    "duration": 10,
-                    "resolution": "1080p"
+                    "height": "1080",
+                    "width": "1080",
+                    "n_seconds": "5",
+                    "n_variants": "1"
                 }
             )
             
@@ -490,7 +492,7 @@ async def generate_sora_video(idea_data: Dict[str, Any], detected_systems: List[
             else:
                 return {
                     "status": "error",
-                    "message": f"Sora API returned status {response.status_code}",
+                    "message": f"Sora API returned status {response.status_code}: {response.text}",
                     "prompt": prompt
                 }
     except Exception as e:
