@@ -462,22 +462,28 @@ async def agent_feasibility_scorer(request: Dict[str, Any]):
 async def generate_sora_video(idea_data: Dict[str, Any], detected_systems: List[Dict[str, Any]]) -> Dict[str, Any]:
     """Generate Sora video demo for an innovation idea"""
     try:
+        if not SORA_ENDPOINT or not SORA_API_KEY:
+            return {
+                "status": "error",
+                "message": "Sora API not configured - missing SORA_ENDPOINT or SORA_API_KEY"
+            }
+        
         prompt = build_healthcare_video_prompt(idea_data, detected_systems)
         
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(
                 f"{SORA_ENDPOINT}?api-version=preview",
                 headers={
-                    "Api-key": SORA_API_KEY,
+                    "api-key": SORA_API_KEY,
                     "Content-Type": "application/json"
                 },
                 json={
                     "model": "sora",
                     "prompt": prompt,
-                    "height": "1080",
-                    "width": "1080",
-                    "n_seconds": "5",
-                    "n_variants": "1"
+                    "height": 480,
+                    "width": 480,
+                    "n_seconds": 5,
+                    "n_variants": 1
                 }
             )
             
@@ -565,6 +571,50 @@ async def agent_sora_video(request: Dict[str, Any]):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/agents/sora")
+async def agent_sora(idea_id: str = Query(...)):
+    """Generate Sora video for an idea (called by frontend retry button)"""
+    try:
+        async with aiosqlite.connect(DB_PATH) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute("SELECT * FROM ideas WHERE id = ?", (idea_id,)) as cursor:
+                row = await cursor.fetchone()
+                if not row:
+                    raise HTTPException(status_code=404, detail="Idea not found")
+                idea = dict(row)
+        
+        detected_systems = await detect_systems(f"{idea.get('title', '')} {idea.get('description', '')}")
+        video_result = await generate_sora_video(idea, detected_systems)
+        
+        sora_data = {"video": video_result}
+        async with aiosqlite.connect(DB_PATH) as db:
+            cursor = await db.execute(
+                "SELECT sora_json FROM agent_analyses WHERE idea_id = ?",
+                (idea_id,)
+            )
+            row = await cursor.fetchone()
+            
+            if row:
+                await db.execute(
+                    "UPDATE agent_analyses SET sora_json = ?, updated_at = ? WHERE idea_id = ?",
+                    (json.dumps(sora_data), datetime.now().isoformat(), idea_id)
+                )
+            else:
+                await db.execute(
+                    "INSERT INTO agent_analyses (idea_id, sora_json, completed_count, updated_at) VALUES (?, ?, ?, ?)",
+                    (idea_id, json.dumps(sora_data), 0, datetime.now().isoformat())
+                )
+            await db.commit()
+        
+        return {
+            "job_id": video_result.get("job_id"),
+            "status": video_result.get("status")
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/agents/sora-status/{job_id}")
 async def get_sora_status(job_id: str):
     """Check the status of a Sora video generation job"""
@@ -576,7 +626,7 @@ async def get_sora_status(job_id: str):
             response = await client.get(
                 f"{SORA_ENDPOINT}/{job_id}?api-version=preview",
                 headers={
-                    "Api-key": SORA_API_KEY
+                    "api-key": SORA_API_KEY
                 }
             )
             
