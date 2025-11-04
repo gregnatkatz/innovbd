@@ -163,7 +163,7 @@ function App() {
           setAgentStatus(prev => ({ ...prev, agent1: 'error' }))
         })
 
-      fetch(`${API_URL}/api/agents/solution-architecture`, {
+      fetch(`${API_URL}/api/agents/architecture-generator`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(ideaPayload)
@@ -193,7 +193,7 @@ function App() {
           setAgentStatus(prev => ({ ...prev, agent3: 'error' }))
         })
 
-      fetch(`${API_URL}/api/agents/internal-discovery`, {
+      fetch(`${API_URL}/api/agents/solution-discovery`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(ideaPayload)
