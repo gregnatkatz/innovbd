@@ -1,4 +1,4 @@
-app = "adventhealth-innovation-demo"
+app = "adventhealth-backend-api"
 primary_region = "sjc"
 
 [build]
