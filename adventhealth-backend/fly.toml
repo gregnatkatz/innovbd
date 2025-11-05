@@ -1,4 +1,4 @@
-app = "adventhealth-backend-v2"
+app = "contosohealth-backend"
 primary_region = "sjc"
 
 [build]

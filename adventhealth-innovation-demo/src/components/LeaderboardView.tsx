@@ -12,7 +12,7 @@ export function LeaderboardView() {
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold mb-2">Innovation Champions</h2>
         <p className="text-slate-400">
-          Top contributors making AdventHealth better every day
+          Top contributors making ContosoHealth better every day
         </p>
       </div>
 

@@ -39,7 +39,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DB_PATH = "adventhealth_ideas.db"
+DB_PATH = "contosohealth_ideas.db"
 
 class IdeaCreate(BaseModel):
     title: str
@@ -64,7 +64,7 @@ class VoteRequest(BaseModel):
     voteType: str
 
 async def seed_existing_solutions(db):
-    """Seed database with realistic existing solutions from other AdventHealth hospitals"""
+    """Seed database with realistic existing solutions from other ContosoHealth hospitals"""
     import uuid
     from datetime import datetime, timedelta
     
@@ -73,11 +73,11 @@ async def seed_existing_solutions(db):
             "id": str(uuid.uuid4()),
             "title": "Mobile Medication Scanning System",
             "description": "Implemented barcode scanning on mobile devices for medication administration, reducing medication errors by 45% and improving nurse workflow efficiency.",
-            "hospital_name": "AdventHealth Orlando",
+            "hospital_name": "ContosoHealth Orlando",
             "department": "Nursing",
             "implemented_date": (datetime.now() - timedelta(days=180)).isoformat(),
             "contact_name": "Rachel Thompson, RN",
-            "contact_email": "rachel.thompson@adventhealth.com",
+            "contact_email": "rachel.thompson@contosohealth.com",
             "tags": json.dumps(["Medication Safety", "Mobile Technology", "Nursing Workflow", "Patient Safety"]),
             "results": "45% reduction in medication errors, 20 minutes saved per nurse per shift, 98% nurse satisfaction",
             "lessons_learned": "Key success factors: extensive nurse training, phased rollout by unit, integration with Epic EHR. Challenge: WiFi coverage in older buildings required infrastructure upgrades."
@@ -86,11 +86,11 @@ async def seed_existing_solutions(db):
             "id": str(uuid.uuid4()),
             "title": "Real-Time Bed Status Dashboard",
             "description": "Digital dashboard showing real-time bed availability across all units, integrated with housekeeping and transport systems to reduce patient wait times.",
-            "hospital_name": "AdventHealth Tampa",
+            "hospital_name": "ContosoHealth Tampa",
             "department": "Emergency Department",
             "implemented_date": (datetime.now() - timedelta(days=240)).isoformat(),
             "contact_name": "Dr. Michael Chen",
-            "contact_email": "michael.chen@adventhealth.com",
+            "contact_email": "michael.chen@contosohealth.com",
             "tags": json.dumps(["Patient Flow", "Bed Management", "ED Efficiency", "Dashboard"]),
             "results": "30% reduction in ED boarding time, 15% increase in patient throughput, $1.2M annual revenue impact",
             "lessons_learned": "Critical to integrate housekeeping and transport workflows. Required change management across multiple departments. Real-time data accuracy was key to adoption."
@@ -99,11 +99,11 @@ async def seed_existing_solutions(db):
             "id": str(uuid.uuid4()),
             "title": "Automated Patient Discharge Instructions",
             "description": "System that generates personalized discharge instructions in patient's preferred language with medication reconciliation and follow-up appointment scheduling.",
-            "hospital_name": "AdventHealth Celebration",
+            "hospital_name": "ContosoHealth Celebration",
             "department": "Inpatient Care",
             "implemented_date": (datetime.now() - timedelta(days=150)).isoformat(),
             "contact_name": "Sarah Martinez, RN",
-            "contact_email": "sarah.martinez@adventhealth.com",
+            "contact_email": "sarah.martinez@contosohealth.com",
             "tags": json.dumps(["Discharge Planning", "Patient Education", "Readmission Prevention", "Epic Integration"]),
             "results": "25% reduction in 30-day readmissions, 95% patient comprehension scores, 40 minutes saved per discharge",
             "lessons_learned": "Translation accuracy was critical. Pilot with Spanish and Creole first. Nurse champions in each unit drove adoption. Integration with Epic discharge module was essential."
@@ -112,11 +112,11 @@ async def seed_existing_solutions(db):
             "id": str(uuid.uuid4()),
             "title": "Nurse Shift Handoff Tool",
             "description": "Structured digital handoff tool replacing paper reports, ensuring consistent communication of patient status, pending tasks, and safety concerns between shifts.",
-            "hospital_name": "AdventHealth Altamonte Springs",
+            "hospital_name": "ContosoHealth Altamonte Springs",
             "department": "Nursing",
             "implemented_date": (datetime.now() - timedelta(days=200)).isoformat(),
             "contact_name": "Jennifer Lee, CNO",
-            "contact_email": "jennifer.lee@adventhealth.com",
+            "contact_email": "jennifer.lee@contosohealth.com",
             "tags": json.dumps(["Nursing Communication", "Patient Safety", "Shift Handoff", "Standardization"]),
             "results": "60% reduction in handoff-related incidents, 15 minutes saved per handoff, improved nurse satisfaction scores",
             "lessons_learned": "Standardized format was key. Mobile access essential for bedside handoffs. Required cultural shift from informal to structured communication."
@@ -125,11 +125,11 @@ async def seed_existing_solutions(db):
             "id": str(uuid.uuid4()),
             "title": "Predictive Staffing Model",
             "description": "Machine learning model that predicts patient volume and acuity 48 hours in advance, enabling proactive staffing adjustments and reducing overtime costs.",
-            "hospital_name": "AdventHealth Kissimmee",
+            "hospital_name": "ContosoHealth Kissimmee",
             "department": "Nursing",
             "implemented_date": (datetime.now() - timedelta(days=300)).isoformat(),
             "contact_name": "David Park",
-            "contact_email": "david.park@adventhealth.com",
+            "contact_email": "david.park@contosohealth.com",
             "tags": json.dumps(["Workforce Management", "AI/ML", "Staffing", "Cost Reduction"]),
             "results": "20% reduction in overtime costs, 85% forecast accuracy, improved staff satisfaction and work-life balance",
             "lessons_learned": "Historical data quality was critical. Required 2 years of clean data. Nurse managers needed training on interpreting predictions. Built trust through transparent accuracy reporting."
@@ -138,11 +138,11 @@ async def seed_existing_solutions(db):
             "id": str(uuid.uuid4()),
             "title": "Rapid Response Team Alert System",
             "description": "Automated early warning system that monitors vital signs and triggers rapid response team alerts based on deterioration criteria, improving patient outcomes.",
-            "hospital_name": "AdventHealth Daytona Beach",
+            "hospital_name": "ContosoHealth Daytona Beach",
             "department": "ICU",
             "implemented_date": (datetime.now() - timedelta(days=365)).isoformat(),
             "contact_name": "Dr. Amanda Foster",
-            "contact_email": "amanda.foster@adventhealth.com",
+            "contact_email": "amanda.foster@contosohealth.com",
             "tags": json.dumps(["Patient Safety", "Early Warning", "Rapid Response", "Clinical Excellence"]),
             "results": "35% reduction in code blue events, 20% improvement in mortality for deteriorating patients, faster response times",
             "lessons_learned": "Alert fatigue was a challenge - required careful tuning of thresholds. Integration with Epic flowsheets essential. RRT team buy-in critical for success."
@@ -151,11 +151,11 @@ async def seed_existing_solutions(db):
             "id": str(uuid.uuid4()),
             "title": "Patient Portal Video Visits",
             "description": "Integrated telehealth video visits directly into patient portal, enabling convenient virtual appointments for follow-ups and routine consultations.",
-            "hospital_name": "AdventHealth Winter Park",
+            "hospital_name": "ContosoHealth Winter Park",
             "department": "Ambulatory Care",
             "implemented_date": (datetime.now() - timedelta(days=280)).isoformat(),
             "contact_name": "Dr. Robert Kim",
-            "contact_email": "robert.kim@adventhealth.com",
+            "contact_email": "robert.kim@contosohealth.com",
             "tags": json.dumps(["Telehealth", "Patient Portal", "Virtual Visits", "Patient Experience"]),
             "results": "15,000 virtual visits in first year, 92% patient satisfaction, 40% reduction in no-show rates",
             "lessons_learned": "Patient education on technology was key. Provided tech support hotline. Started with tech-savvy patient populations. Reimbursement policies needed clarification."
@@ -164,11 +164,11 @@ async def seed_existing_solutions(db):
             "id": str(uuid.uuid4()),
             "title": "OR Supply Preference Cards",
             "description": "Digital surgeon preference cards with automated supply picking and case cart preparation, reducing OR setup time and supply waste.",
-            "hospital_name": "AdventHealth Wesley Chapel",
+            "hospital_name": "ContosoHealth Wesley Chapel",
             "department": "Operating Room",
             "implemented_date": (datetime.now() - timedelta(days=220)).isoformat(),
             "contact_name": "Dr. James Wilson",
-            "contact_email": "james.wilson@adventhealth.com",
+            "contact_email": "james.wilson@contosohealth.com",
             "tags": json.dumps(["OR Efficiency", "Supply Chain", "Surgeon Preferences", "Waste Reduction"]),
             "results": "25% reduction in OR setup time, $500K annual supply cost savings, 30% reduction in supply waste",
             "lessons_learned": "Surgeon engagement was critical. Required individual meetings to build preference cards. Supply chain integration took longer than expected. ROI was compelling."
@@ -177,11 +177,11 @@ async def seed_existing_solutions(db):
             "id": str(uuid.uuid4()),
             "title": "Patient Experience Text Surveys",
             "description": "Real-time text message surveys sent to patients post-discharge to capture immediate feedback and identify service recovery opportunities.",
-            "hospital_name": "AdventHealth Apopka",
+            "hospital_name": "ContosoHealth Apopka",
             "department": "Patient Experience",
             "implemented_date": (datetime.now() - timedelta(days=190)).isoformat(),
             "contact_name": "Lisa Anderson",
-            "contact_email": "lisa.anderson@adventhealth.com",
+            "contact_email": "lisa.anderson@contosohealth.com",
             "tags": json.dumps(["Patient Experience", "Surveys", "Real-Time Feedback", "Service Recovery"]),
             "results": "65% response rate (vs 15% for traditional surveys), 48-hour service recovery window, 12-point HCAHPS improvement",
             "lessons_learned": "Timing was critical - send within 24 hours of discharge. Keep surveys short (3-5 questions). Text opt-in compliance required careful implementation."
@@ -190,11 +190,11 @@ async def seed_existing_solutions(db):
             "id": str(uuid.uuid4()),
             "title": "Clinical Documentation AI Assistant",
             "description": "AI-powered tool that listens to patient encounters and generates draft clinical notes, reducing documentation burden on physicians.",
-            "hospital_name": "AdventHealth Lake Wales",
+            "hospital_name": "ContosoHealth Lake Wales",
             "department": "Ambulatory Care",
             "implemented_date": (datetime.now() - timedelta(days=120)).isoformat(),
             "contact_name": "Dr. Patricia Lee",
-            "contact_email": "patricia.lee@adventhealth.com",
+            "contact_email": "patricia.lee@contosohealth.com",
             "tags": json.dumps(["AI/ML", "Clinical Documentation", "Physician Efficiency", "Ambient Listening"]),
             "results": "2 hours saved per physician per day, 40% reduction in after-hours charting, improved physician satisfaction",
             "lessons_learned": "Privacy concerns required careful patient consent process. Accuracy improved with specialty-specific training. Physicians still reviewed and edited all notes."
@@ -203,11 +203,11 @@ async def seed_existing_solutions(db):
             "id": str(uuid.uuid4()),
             "title": "Pharmacy Automated Dispensing Cabinets",
             "description": "Upgraded automated dispensing cabinets with biometric access, real-time inventory tracking, and integration with medication administration records.",
-            "hospital_name": "AdventHealth Ocala",
+            "hospital_name": "ContosoHealth Ocala",
             "department": "Pharmacy",
             "implemented_date": (datetime.now() - timedelta(days=320)).isoformat(),
             "contact_name": "Thomas Garcia, PharmD",
-            "contact_email": "thomas.garcia@adventhealth.com",
+            "contact_email": "thomas.garcia@contosohealth.com",
             "tags": json.dumps(["Pharmacy", "Medication Safety", "Inventory Management", "Automation"]),
             "results": "50% reduction in medication diversion incidents, 98% inventory accuracy, $300K annual cost savings",
             "lessons_learned": "Biometric access initially met resistance but improved security. Real-time inventory prevented stockouts. Integration with Epic was complex but valuable."
@@ -216,11 +216,11 @@ async def seed_existing_solutions(db):
             "id": str(uuid.uuid4()),
             "title": "Employee Wellness App",
             "description": "Mobile app providing personalized wellness challenges, mental health resources, fitness tracking, and peer support for staff wellbeing.",
-            "hospital_name": "AdventHealth Palm Coast",
+            "hospital_name": "ContosoHealth Palm Coast",
             "department": "HR",
             "implemented_date": (datetime.now() - timedelta(days=160)).isoformat(),
             "contact_name": "Karen White",
-            "contact_email": "karen.white@adventhealth.com",
+            "contact_email": "karen.white@contosohealth.com",
             "tags": json.dumps(["Workforce Wellbeing", "Mental Health", "Employee Engagement", "Mobile App"]),
             "results": "3,500 active users, 25% reduction in reported burnout, improved retention rates, positive culture impact",
             "lessons_learned": "Gamification drove engagement. Privacy protections were essential. Leadership participation was key. Integrated with existing benefits programs."
@@ -229,11 +229,11 @@ async def seed_existing_solutions(db):
             "id": str(uuid.uuid4()),
             "title": "Radiology AI Triage System",
             "description": "AI algorithm that analyzes chest X-rays and CT scans to flag critical findings and prioritize radiologist worklist, improving turnaround time.",
-            "hospital_name": "AdventHealth Sebring",
+            "hospital_name": "ContosoHealth Sebring",
             "department": "Radiology",
             "implemented_date": (datetime.now() - timedelta(days=400)).isoformat(),
             "contact_name": "Dr. Maria Rodriguez",
-            "contact_email": "maria.rodriguez@adventhealth.com",
+            "contact_email": "maria.rodriguez@contosohealth.com",
             "tags": json.dumps(["AI/ML", "Radiology", "Clinical Excellence", "Triage"]),
             "results": "50% reduction in critical finding notification time, 99.2% sensitivity for critical findings, improved patient outcomes",
             "lessons_learned": "FDA clearance process was lengthy. Radiologist trust built through transparent accuracy reporting. Integration with PACS required vendor collaboration."
@@ -242,11 +242,11 @@ async def seed_existing_solutions(db):
             "id": str(uuid.uuid4()),
             "title": "Supply Chain Demand Forecasting",
             "description": "Predictive analytics system that forecasts supply needs based on historical usage, seasonal trends, and patient volume, optimizing inventory levels.",
-            "hospital_name": "AdventHealth Waterman",
+            "hospital_name": "ContosoHealth Waterman",
             "department": "Supply Chain",
             "implemented_date": (datetime.now() - timedelta(days=350)).isoformat(),
             "contact_name": "David Chen",
-            "contact_email": "david.chen@adventhealth.com",
+            "contact_email": "david.chen@contosohealth.com",
             "tags": json.dumps(["Supply Chain", "AI/ML", "Inventory Management", "Cost Reduction"]),
             "results": "$800K annual cost savings, 30% reduction in stockouts, 25% reduction in excess inventory",
             "lessons_learned": "Data quality from multiple systems was challenging. Required cross-functional team. Buyer adoption required demonstrating accuracy over time."
@@ -255,11 +255,11 @@ async def seed_existing_solutions(db):
             "id": str(uuid.uuid4()),
             "title": "Patient Transport Tracking System",
             "description": "Real-time GPS tracking of patient transport staff with automated dispatch and status updates, reducing wait times and improving coordination.",
-            "hospital_name": "AdventHealth Zephyrhills",
+            "hospital_name": "ContosoHealth Zephyrhills",
             "department": "Patient Transport",
             "implemented_date": (datetime.now() - timedelta(days=210)).isoformat(),
             "contact_name": "Michael Brown",
-            "contact_email": "michael.brown@adventhealth.com",
+            "contact_email": "michael.brown@contosohealth.com",
             "tags": json.dumps(["Patient Flow", "Transport", "GPS Tracking", "Operational Excellence"]),
             "results": "40% reduction in transport wait times, 25% improvement in staff productivity, better patient experience scores",
             "lessons_learned": "Staff initially concerned about tracking - transparent communication about purpose was key. Mobile devices needed to be durable. Integration with bed management system enhanced value."
@@ -288,7 +288,7 @@ async def seed_existing_solutions(db):
     print(f"Seeded {len(solutions)} existing solutions into database")
 
 async def seed_existing_projects(db):
-    """Seed database with realistic existing AdventHealth projects"""
+    """Seed database with realistic existing ContosoHealth projects"""
     import uuid
     from datetime import datetime, timedelta
     
@@ -299,7 +299,7 @@ async def seed_existing_projects(db):
             "description": "Real-time bed availability tracking and predictive analytics to optimize patient placement and reduce wait times in ED and for admissions.",
             "departments": json.dumps(["Emergency Department", "Inpatient Care", "IT"]),
             "owner_name": "Dr. Sarah Chen",
-            "owner_email": "sarah.chen@adventhealth.com",
+            "owner_email": "sarah.chen@contosohealth.com",
             "tags": json.dumps(["AI/ML", "Patient Flow", "Capacity Management", "Azure"]),
             "current_phase": "Pilot Testing",
             "start_date": (datetime.now() - timedelta(days=120)).isoformat(),
@@ -312,7 +312,7 @@ async def seed_existing_projects(db):
             "description": "Remote patient monitoring using AI-powered video analytics to detect falls and patient distress, reducing need for 1:1 sitters.",
             "departments": json.dumps(["Inpatient Care", "Nursing", "IT"]),
             "owner_name": "Jennifer Martinez, RN",
-            "owner_email": "jennifer.martinez@adventhealth.com",
+            "owner_email": "jennifer.martinez@contosohealth.com",
             "tags": json.dumps(["AI/ML", "Patient Safety", "Workforce Efficiency", "Computer Vision"]),
             "current_phase": "Scaling",
             "start_date": (datetime.now() - timedelta(days=240)).isoformat(),
@@ -325,7 +325,7 @@ async def seed_existing_projects(db):
             "description": "AI-powered tool that analyzes patient records and suggests optimal discharge timing, transportation needs, and follow-up care coordination.",
             "departments": json.dumps(["Case Management", "Inpatient Care", "IT"]),
             "owner_name": "Michael Thompson",
-            "owner_email": "michael.thompson@adventhealth.com",
+            "owner_email": "michael.thompson@contosohealth.com",
             "tags": json.dumps(["AI/ML", "Discharge Planning", "Length of Stay", "Epic Integration"]),
             "current_phase": "Development",
             "start_date": (datetime.now() - timedelta(days=90)).isoformat(),
@@ -338,7 +338,7 @@ async def seed_existing_projects(db):
             "description": "Machine learning model that analyzes imaging orders and prioritizes critical cases for radiologist review, improving turnaround time for urgent findings.",
             "departments": json.dumps(["Radiology", "IT", "Emergency Department"]),
             "owner_name": "Dr. Robert Kim",
-            "owner_email": "robert.kim@adventhealth.com",
+            "owner_email": "robert.kim@contosohealth.com",
             "tags": json.dumps(["AI/ML", "Radiology", "Clinical Excellence", "PACS Integration"]),
             "current_phase": "Production",
             "start_date": (datetime.now() - timedelta(days=365)).isoformat(),
@@ -351,7 +351,7 @@ async def seed_existing_projects(db):
             "description": "Real-time monitoring system using ML to detect early signs of sepsis in hospitalized patients, enabling faster intervention.",
             "departments": json.dumps(["Inpatient Care", "ICU", "Quality & Safety", "IT"]),
             "owner_name": "Dr. Amanda Foster",
-            "owner_email": "amanda.foster@adventhealth.com",
+            "owner_email": "amanda.foster@contosohealth.com",
             "tags": json.dumps(["AI/ML", "Clinical Excellence", "Patient Safety", "Epic Integration"]),
             "current_phase": "Production",
             "start_date": (datetime.now() - timedelta(days=450)).isoformat(),
@@ -364,7 +364,7 @@ async def seed_existing_projects(db):
             "description": "AI-driven scheduling system that balances staff preferences, patient acuity, and regulatory requirements to create optimal nursing schedules.",
             "departments": json.dumps(["Nursing", "HR", "IT"]),
             "owner_name": "Lisa Anderson, CNO",
-            "owner_email": "lisa.anderson@adventhealth.com",
+            "owner_email": "lisa.anderson@contosohealth.com",
             "tags": json.dumps(["AI/ML", "Workforce Management", "Scheduling", "Staff Satisfaction"]),
             "current_phase": "Pilot Testing",
             "start_date": (datetime.now() - timedelta(days=150)).isoformat(),
@@ -377,7 +377,7 @@ async def seed_existing_projects(db):
             "description": "AI-powered chatbot integrated into patient portal to answer common questions, schedule appointments, and provide pre-visit instructions.",
             "departments": json.dumps(["IT", "Patient Experience", "Ambulatory Care"]),
             "owner_name": "David Park",
-            "owner_email": "david.park@adventhealth.com",
+            "owner_email": "david.park@contosohealth.com",
             "tags": json.dumps(["AI/ML", "Patient Portal", "Chatbot", "Azure Bot Service"]),
             "current_phase": "Development",
             "start_date": (datetime.now() - timedelta(days=60)).isoformat(),
@@ -390,7 +390,7 @@ async def seed_existing_projects(db):
             "description": "Process improvement and technology integration to reduce operating room turnover time through better coordination and predictive scheduling.",
             "departments": json.dumps(["Operating Room", "Surgery", "Supply Chain", "IT"]),
             "owner_name": "Dr. James Wilson",
-            "owner_email": "james.wilson@adventhealth.com",
+            "owner_email": "james.wilson@contosohealth.com",
             "tags": json.dumps(["Process Improvement", "OR Efficiency", "Scheduling", "IoT Sensors"]),
             "current_phase": "Implementation",
             "start_date": (datetime.now() - timedelta(days=180)).isoformat(),
@@ -403,7 +403,7 @@ async def seed_existing_projects(db):
             "description": "Home monitoring program using connected devices to track vitals for patients with CHF, COPD, and diabetes, reducing readmissions.",
             "departments": json.dumps(["Ambulatory Care", "Cardiology", "Pulmonology", "IT"]),
             "owner_name": "Dr. Maria Rodriguez",
-            "owner_email": "maria.rodriguez@adventhealth.com",
+            "owner_email": "maria.rodriguez@contosohealth.com",
             "tags": json.dumps(["Telehealth", "Remote Monitoring", "Chronic Care", "IoT"]),
             "current_phase": "Scaling",
             "start_date": (datetime.now() - timedelta(days=300)).isoformat(),
@@ -416,7 +416,7 @@ async def seed_existing_projects(db):
             "description": "Natural language processing tool that analyzes physician notes and suggests documentation improvements for coding accuracy and completeness.",
             "departments": json.dumps(["Health Information Management", "Revenue Cycle", "IT"]),
             "owner_name": "Patricia Lee",
-            "owner_email": "patricia.lee@adventhealth.com",
+            "owner_email": "patricia.lee@contosohealth.com",
             "tags": json.dumps(["AI/ML", "Clinical Documentation", "Revenue Cycle", "NLP"]),
             "current_phase": "Pilot Testing",
             "start_date": (datetime.now() - timedelta(days=75)).isoformat(),
@@ -429,7 +429,7 @@ async def seed_existing_projects(db):
             "description": "Machine learning model that predicts supply needs based on historical usage, seasonal trends, and patient volume forecasts.",
             "departments": json.dumps(["Supply Chain", "IT", "Finance"]),
             "owner_name": "Thomas Garcia",
-            "owner_email": "thomas.garcia@adventhealth.com",
+            "owner_email": "thomas.garcia@contosohealth.com",
             "tags": json.dumps(["AI/ML", "Supply Chain", "Inventory Management", "Cost Reduction"]),
             "current_phase": "Production",
             "start_date": (datetime.now() - timedelta(days=400)).isoformat(),
@@ -442,7 +442,7 @@ async def seed_existing_projects(db):
             "description": "Digital platform with AI-driven personalized wellness recommendations, mental health resources, and burnout risk detection for staff.",
             "departments": json.dumps(["HR", "Employee Health", "IT"]),
             "owner_name": "Karen White",
-            "owner_email": "karen.white@adventhealth.com",
+            "owner_email": "karen.white@contosohealth.com",
             "tags": json.dumps(["Workforce Wellbeing", "Mental Health", "AI/ML", "Employee Engagement"]),
             "current_phase": "Implementation",
             "start_date": (datetime.now() - timedelta(days=100)).isoformat(),
@@ -947,7 +947,7 @@ async def agent_feasibility_scorer(request: Dict[str, Any]):
                 },
                 "strategic": {
                     "score": strategic_score,
-                    "reasoning": "Strong alignment with AdventHealth strategic priorities."
+                    "reasoning": "Strong alignment with ContosoHealth strategic priorities."
                 }
             },
             "recommendation": "APPROVE" if overall_score >= 7 else "REVIEW" if overall_score >= 5 else "DEFER",
@@ -1425,8 +1425,8 @@ async def seed_ideas():
             "successMetrics": "Efficiency, satisfaction scores",
             "submitterName": f"Staff {idx}",
             "submitterDepartment": t["dept"],
-            "submitterHospital": "AdventHealth",
-            "submitterContact": f"staff{idx}@adventhealth.com",
+            "submitterHospital": "ContosoHealth",
+            "submitterContact": f"staff{idx}@contosohealth.com",
             "categoryType": t["cat"],
             "functionalArea": t["dept"],
             "status": "Under Review",
@@ -1738,7 +1738,7 @@ OUTPUT FORMAT (JSON):
                         f"I wanted to let you know that we already have a project underway that addresses this need: '{match['title']}' led by {match['project_lead']}. This project is currently {match['status'].lower()} and has made significant progress.",
                         f"I'd encourage you to connect with {match['project_lead']} at {match['contact_email']} to learn more and see how you might contribute your insights to this effort."
                     ],
-                    "call_to_action": "Please keep the great ideas coming - your engagement is exactly what drives innovation at AdventHealth!",
+                    "call_to_action": "Please keep the great ideas coming - your engagement is exactly what drives innovation at ContosoHealth!",
                     "signature": exec_name
                 }
             else:

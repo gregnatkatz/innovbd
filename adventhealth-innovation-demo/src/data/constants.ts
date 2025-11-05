@@ -10,7 +10,7 @@ export const successStories = [
     journey: {
       submission: 'Sarah Chen, a Medical/Surgical nurse, submitted a simple idea: "Help me not miss giving patients their meds on time." She described how getting pulled away for emergencies caused medication delays, affecting patient safety.',
       growth: 'The idea gained 47 upvotes and sparked 12 comments from nurses across 5 units. Dr. Emily Foster from Pharmacy suggested integrating with Epic MAR. Michael Chen from IT confirmed existing infrastructure could support it. The community refined it into a comprehensive solution.',
-      action: 'AdventHealth launched "Project MedSync" in January 2025. A cross-functional team piloted the system on 3 units, integrating Pyxis dispensing data with Epic Rover mobile carts. Real-time alerts notified charge nurses when medications weren\'t administered within 30 minutes.',
+      action: 'ContosoHealth launched "Project MedSync" in January 2025. A cross-functional team piloted the system on 3 units, integrating Pyxis dispensing data with Epic Rover mobile carts. Real-time alerts notified charge nurses when medications weren\'t administered within 30 minutes.',
       timeline: '6 months from submission to pilot launch, 3 months pilot, full rollout in September 2025'
     },
     staffImpact: {
@@ -38,7 +38,7 @@ export const successStories = [
     journey: {
       submission: 'Mike Johnson submitted a spark idea: "Faster way to find wheelchairs - we waste so much time looking for them. Can we put trackers on them?" Just two sentences, but it captured a real pain point.',
       growth: 'The idea received 23 upvotes and 8 comments. Transport staff from other hospitals chimed in with similar frustrations. Amanda Foster from Pediatrics noted they also lose IV poles and patient lifts. The scope expanded to track all mobile equipment.',
-      action: 'AdventHealth partnered with a medical equipment vendor to pilot Bluetooth tracking tags on 200 wheelchairs at Orlando campus. A mobile app shows real-time locations. After 2-month pilot showed 70% time savings, the program expanded hospital-wide.',
+      action: 'ContosoHealth partnered with a medical equipment vendor to pilot Bluetooth tracking tags on 200 wheelchairs at Orlando campus. A mobile app shows real-time locations. After 2-month pilot showed 70% time savings, the program expanded hospital-wide.',
       timeline: '4 months from submission to pilot, 2 months pilot, full rollout in August 2025'
     },
     staffImpact: {
@@ -66,7 +66,7 @@ export const successStories = [
     journey: {
       submission: 'Dr. Lee submitted: "Discharge prescriptions get lost - we send them to pharmacy but patients say they never got them. Communication breakdown." He described how 30% of prescriptions had issues, leading to readmissions.',
       growth: 'The idea gained 39 upvotes and 15 comments. Pharmacists, case managers, and nurses all contributed. Dr. Susan Miller suggested checking insurance formulary before prescribing. Jennifer Adams from IT proposed text notifications. The community built a comprehensive solution.',
-      action: 'AdventHealth IT developed an integrated system checking insurance coverage, showing out-of-pocket costs, and sending text alerts when prescriptions are ready. Pharmacists review high-risk medications before discharge. Pilot launched on 4 medical units in March 2025.',
+      action: 'ContosoHealth IT developed an integrated system checking insurance coverage, showing out-of-pocket costs, and sending text alerts when prescriptions are ready. Pharmacists review high-risk medications before discharge. Pilot launched on 4 medical units in March 2025.',
       timeline: '8 months from submission to pilot, 4 months pilot, full rollout in July 2025'
     },
     staffImpact: {

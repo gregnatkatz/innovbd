@@ -55,7 +55,7 @@ export function SuccessStoriesView({ persona, onViewOriginalIdea }: SuccessStori
                     </div>
                     
                     <div>
-                      <div className="text-sm font-semibold text-purple-400 mb-1">3. AdventHealth Took Action</div>
+                      <div className="text-sm font-semibold text-purple-400 mb-1">3. ContosoHealth Took Action</div>
                       <p className="text-slate-300 text-sm">{story.journey.action}</p>
                     </div>
                     

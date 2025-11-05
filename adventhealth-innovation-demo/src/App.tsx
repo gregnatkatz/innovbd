@@ -124,8 +124,8 @@ function App() {
           expectedBenefit: newIdea.expectedBenefit,
           submitterName: 'Demo User',
           submitterDepartment: 'Innovation Team',
-          submitterHospital: 'AdventHealth Orlando',
-          submitterContact: 'demo@adventhealth.com'
+          submitterHospital: 'ContosoHealth Orlando',
+          submitterContact: 'demo@contosohealth.com'
         })
       })
 
@@ -283,7 +283,7 @@ function App() {
             <Lightbulb className="w-8 h-8 text-blue-500" />
             <div>
               <h1 className="text-lg font-bold">Innovation Hub</h1>
-              <p className="text-xs text-slate-400">AdventHealth</p>
+              <p className="text-xs text-slate-400">ContosoHealth</p>
             </div>
           </div>
         </div>
