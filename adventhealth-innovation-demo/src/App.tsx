@@ -31,6 +31,7 @@ import { SubmitIdeaForm } from './components/SubmitIdeaForm'
 import { SuccessStoriesView } from './components/SuccessStoriesView'
 import { LeaderboardView } from './components/LeaderboardView'
 import { AnalysisDialog } from './components/AnalysisDialog'
+import { ExecutiveDashboard } from './components/ExecutiveDashboard'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
@@ -51,6 +52,7 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterCategory, setFilterCategory] = useState<string>('all')
+  const [filterDepartment, setFilterDepartment] = useState<string>('Nursing')
   const [ideas, setIdeas] = useState<Idea[]>([])
   const [selectedIdea, setSelectedIdea] = useState<Idea | null>(null)
   const [copilotOpen, setCopilotOpen] = useState(false)
@@ -449,11 +451,15 @@ function App() {
         <div className="flex-1 overflow-hidden flex">
           <ScrollArea className="flex-1 p-6">
             {currentView === 'dashboard' && (
-              <DashboardView 
-                ideas={ideas} 
-                persona={persona} 
-                onIdeaClick={setSelectedIdea} 
-              />
+              persona === 'executive' ? (
+                <ExecutiveDashboard ideas={ideas} />
+              ) : (
+                <DashboardView 
+                  ideas={ideas} 
+                  persona={persona} 
+                  onIdeaClick={setSelectedIdea} 
+                />
+              )
             )}
 
             {currentView === 'browse' && (
@@ -463,6 +469,8 @@ function App() {
                 setSearchQuery={setSearchQuery}
                 filterCategory={filterCategory}
                 setFilterCategory={setFilterCategory}
+                filterDepartment={filterDepartment}
+                setFilterDepartment={setFilterDepartment}
                 categories={categories}
                 onIdeaClick={setSelectedIdea}
                 onVote={handleVote}

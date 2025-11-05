@@ -16,6 +16,8 @@ interface BrowseIdeasViewProps {
   setSearchQuery: (query: string) => void
   filterCategory: string
   setFilterCategory: (category: string) => void
+  filterDepartment: string
+  setFilterDepartment: (department: string) => void
   categories: string[]
   onIdeaClick: (idea: Idea) => void
   onVote: (ideaId: string, voteType: 'up' | 'down') => void
@@ -33,12 +35,28 @@ interface AgentAnalysis {
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
+const departments = [
+  'All Departments',
+  'Nursing',
+  'Emergency Department',
+  'Surgery/Operating Room',
+  'Pharmacy',
+  'Laboratory',
+  'Radiology',
+  'IT/Digital',
+  'Administration',
+  'Patient Services',
+  'Supply Chain'
+]
+
 export function BrowseIdeasView({
   ideas,
   searchQuery,
   setSearchQuery,
   filterCategory,
   setFilterCategory,
+  filterDepartment,
+  setFilterDepartment,
   categories,
   onIdeaClick,
   onVote,
@@ -52,7 +70,10 @@ export function BrowseIdeasView({
     const matchesSearch = idea.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       idea.description.toLowerCase().includes(searchQuery.toLowerCase())
     const matchesCategory = filterCategory === 'all' || idea.categoryType === filterCategory
-    return matchesSearch && matchesCategory
+    const matchesDepartment = filterDepartment === 'All Departments' || 
+      idea.submitterDepartment === filterDepartment ||
+      idea.functionalArea === filterDepartment
+    return matchesSearch && matchesCategory && matchesDepartment
   })
 
   useEffect(() => {
@@ -191,6 +212,17 @@ export function BrowseIdeasView({
             className="pl-10 bg-slate-900 border-slate-800"
           />
         </div>
+        <Select value={filterDepartment} onValueChange={setFilterDepartment}>
+          <SelectTrigger className="w-56 bg-slate-900 border-slate-800">
+            <Filter className="w-4 h-4 mr-2" />
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {departments.map(dept => (
+              <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Select value={filterCategory} onValueChange={setFilterCategory}>
           <SelectTrigger className="w-64 bg-slate-900 border-slate-800">
             <Filter className="w-4 h-4 mr-2" />
