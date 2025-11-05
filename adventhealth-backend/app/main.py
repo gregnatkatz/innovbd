@@ -10,19 +10,26 @@ import json
 import aiosqlite
 import httpx
 import asyncio
+from azure.identity import ClientSecretCredential
 
 load_dotenv()
 
 app = FastAPI()
 
 openai_client = AzureOpenAI(
-    api_key=os.getenv("O3_API_KEY"),
+    api_key=os.getenv("AZURE_OPENAI_API_KEY"),
     api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT")
 )
 
 SORA_ENDPOINT = os.getenv("SORA_ENDPOINT")
 SORA_API_KEY = os.getenv("SORA_API_KEY")
+
+AZURE_TENANT_ID = os.getenv("AZURE_TENANT_ID")
+AZURE_CLIENT_ID = os.getenv("AZURE_CLIENT_ID")
+AZURE_CLIENT_SECRET = os.getenv("AZURE_CLIENT_SECRET")
+AZURE_AI_PROJECT_ENDPOINT = os.getenv("AZURE_AI_PROJECT_ENDPOINT", "").rstrip("/")
+AZURE_AI_PROJECT_NAME = os.getenv("AZURE_AI_PROJECT_NAME")
 
 app.add_middleware(
     CORSMiddleware,
@@ -55,6 +62,415 @@ class CommentCreate(BaseModel):
 
 class VoteRequest(BaseModel):
     voteType: str
+
+async def seed_existing_solutions(db):
+    """Seed database with realistic existing solutions from other AdventHealth hospitals"""
+    import uuid
+    from datetime import datetime, timedelta
+    
+    solutions = [
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Mobile Medication Scanning System",
+            "description": "Implemented barcode scanning on mobile devices for medication administration, reducing medication errors by 45% and improving nurse workflow efficiency.",
+            "hospital_name": "AdventHealth Orlando",
+            "department": "Nursing",
+            "implemented_date": (datetime.now() - timedelta(days=180)).isoformat(),
+            "contact_name": "Rachel Thompson, RN",
+            "contact_email": "rachel.thompson@adventhealth.com",
+            "tags": json.dumps(["Medication Safety", "Mobile Technology", "Nursing Workflow", "Patient Safety"]),
+            "results": "45% reduction in medication errors, 20 minutes saved per nurse per shift, 98% nurse satisfaction",
+            "lessons_learned": "Key success factors: extensive nurse training, phased rollout by unit, integration with Epic EHR. Challenge: WiFi coverage in older buildings required infrastructure upgrades."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Real-Time Bed Status Dashboard",
+            "description": "Digital dashboard showing real-time bed availability across all units, integrated with housekeeping and transport systems to reduce patient wait times.",
+            "hospital_name": "AdventHealth Tampa",
+            "department": "Emergency Department",
+            "implemented_date": (datetime.now() - timedelta(days=240)).isoformat(),
+            "contact_name": "Dr. Michael Chen",
+            "contact_email": "michael.chen@adventhealth.com",
+            "tags": json.dumps(["Patient Flow", "Bed Management", "ED Efficiency", "Dashboard"]),
+            "results": "30% reduction in ED boarding time, 15% increase in patient throughput, $1.2M annual revenue impact",
+            "lessons_learned": "Critical to integrate housekeeping and transport workflows. Required change management across multiple departments. Real-time data accuracy was key to adoption."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Automated Patient Discharge Instructions",
+            "description": "System that generates personalized discharge instructions in patient's preferred language with medication reconciliation and follow-up appointment scheduling.",
+            "hospital_name": "AdventHealth Celebration",
+            "department": "Inpatient Care",
+            "implemented_date": (datetime.now() - timedelta(days=150)).isoformat(),
+            "contact_name": "Sarah Martinez, RN",
+            "contact_email": "sarah.martinez@adventhealth.com",
+            "tags": json.dumps(["Discharge Planning", "Patient Education", "Readmission Prevention", "Epic Integration"]),
+            "results": "25% reduction in 30-day readmissions, 95% patient comprehension scores, 40 minutes saved per discharge",
+            "lessons_learned": "Translation accuracy was critical. Pilot with Spanish and Creole first. Nurse champions in each unit drove adoption. Integration with Epic discharge module was essential."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Nurse Shift Handoff Tool",
+            "description": "Structured digital handoff tool replacing paper reports, ensuring consistent communication of patient status, pending tasks, and safety concerns between shifts.",
+            "hospital_name": "AdventHealth Altamonte Springs",
+            "department": "Nursing",
+            "implemented_date": (datetime.now() - timedelta(days=200)).isoformat(),
+            "contact_name": "Jennifer Lee, CNO",
+            "contact_email": "jennifer.lee@adventhealth.com",
+            "tags": json.dumps(["Nursing Communication", "Patient Safety", "Shift Handoff", "Standardization"]),
+            "results": "60% reduction in handoff-related incidents, 15 minutes saved per handoff, improved nurse satisfaction scores",
+            "lessons_learned": "Standardized format was key. Mobile access essential for bedside handoffs. Required cultural shift from informal to structured communication."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Predictive Staffing Model",
+            "description": "Machine learning model that predicts patient volume and acuity 48 hours in advance, enabling proactive staffing adjustments and reducing overtime costs.",
+            "hospital_name": "AdventHealth Kissimmee",
+            "department": "Nursing",
+            "implemented_date": (datetime.now() - timedelta(days=300)).isoformat(),
+            "contact_name": "David Park",
+            "contact_email": "david.park@adventhealth.com",
+            "tags": json.dumps(["Workforce Management", "AI/ML", "Staffing", "Cost Reduction"]),
+            "results": "20% reduction in overtime costs, 85% forecast accuracy, improved staff satisfaction and work-life balance",
+            "lessons_learned": "Historical data quality was critical. Required 2 years of clean data. Nurse managers needed training on interpreting predictions. Built trust through transparent accuracy reporting."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Rapid Response Team Alert System",
+            "description": "Automated early warning system that monitors vital signs and triggers rapid response team alerts based on deterioration criteria, improving patient outcomes.",
+            "hospital_name": "AdventHealth Daytona Beach",
+            "department": "ICU",
+            "implemented_date": (datetime.now() - timedelta(days=365)).isoformat(),
+            "contact_name": "Dr. Amanda Foster",
+            "contact_email": "amanda.foster@adventhealth.com",
+            "tags": json.dumps(["Patient Safety", "Early Warning", "Rapid Response", "Clinical Excellence"]),
+            "results": "35% reduction in code blue events, 20% improvement in mortality for deteriorating patients, faster response times",
+            "lessons_learned": "Alert fatigue was a challenge - required careful tuning of thresholds. Integration with Epic flowsheets essential. RRT team buy-in critical for success."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Patient Portal Video Visits",
+            "description": "Integrated telehealth video visits directly into patient portal, enabling convenient virtual appointments for follow-ups and routine consultations.",
+            "hospital_name": "AdventHealth Winter Park",
+            "department": "Ambulatory Care",
+            "implemented_date": (datetime.now() - timedelta(days=280)).isoformat(),
+            "contact_name": "Dr. Robert Kim",
+            "contact_email": "robert.kim@adventhealth.com",
+            "tags": json.dumps(["Telehealth", "Patient Portal", "Virtual Visits", "Patient Experience"]),
+            "results": "15,000 virtual visits in first year, 92% patient satisfaction, 40% reduction in no-show rates",
+            "lessons_learned": "Patient education on technology was key. Provided tech support hotline. Started with tech-savvy patient populations. Reimbursement policies needed clarification."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "OR Supply Preference Cards",
+            "description": "Digital surgeon preference cards with automated supply picking and case cart preparation, reducing OR setup time and supply waste.",
+            "hospital_name": "AdventHealth Wesley Chapel",
+            "department": "Operating Room",
+            "implemented_date": (datetime.now() - timedelta(days=220)).isoformat(),
+            "contact_name": "Dr. James Wilson",
+            "contact_email": "james.wilson@adventhealth.com",
+            "tags": json.dumps(["OR Efficiency", "Supply Chain", "Surgeon Preferences", "Waste Reduction"]),
+            "results": "25% reduction in OR setup time, $500K annual supply cost savings, 30% reduction in supply waste",
+            "lessons_learned": "Surgeon engagement was critical. Required individual meetings to build preference cards. Supply chain integration took longer than expected. ROI was compelling."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Patient Experience Text Surveys",
+            "description": "Real-time text message surveys sent to patients post-discharge to capture immediate feedback and identify service recovery opportunities.",
+            "hospital_name": "AdventHealth Apopka",
+            "department": "Patient Experience",
+            "implemented_date": (datetime.now() - timedelta(days=190)).isoformat(),
+            "contact_name": "Lisa Anderson",
+            "contact_email": "lisa.anderson@adventhealth.com",
+            "tags": json.dumps(["Patient Experience", "Surveys", "Real-Time Feedback", "Service Recovery"]),
+            "results": "65% response rate (vs 15% for traditional surveys), 48-hour service recovery window, 12-point HCAHPS improvement",
+            "lessons_learned": "Timing was critical - send within 24 hours of discharge. Keep surveys short (3-5 questions). Text opt-in compliance required careful implementation."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Clinical Documentation AI Assistant",
+            "description": "AI-powered tool that listens to patient encounters and generates draft clinical notes, reducing documentation burden on physicians.",
+            "hospital_name": "AdventHealth Lake Wales",
+            "department": "Ambulatory Care",
+            "implemented_date": (datetime.now() - timedelta(days=120)).isoformat(),
+            "contact_name": "Dr. Patricia Lee",
+            "contact_email": "patricia.lee@adventhealth.com",
+            "tags": json.dumps(["AI/ML", "Clinical Documentation", "Physician Efficiency", "Ambient Listening"]),
+            "results": "2 hours saved per physician per day, 40% reduction in after-hours charting, improved physician satisfaction",
+            "lessons_learned": "Privacy concerns required careful patient consent process. Accuracy improved with specialty-specific training. Physicians still reviewed and edited all notes."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Pharmacy Automated Dispensing Cabinets",
+            "description": "Upgraded automated dispensing cabinets with biometric access, real-time inventory tracking, and integration with medication administration records.",
+            "hospital_name": "AdventHealth Ocala",
+            "department": "Pharmacy",
+            "implemented_date": (datetime.now() - timedelta(days=320)).isoformat(),
+            "contact_name": "Thomas Garcia, PharmD",
+            "contact_email": "thomas.garcia@adventhealth.com",
+            "tags": json.dumps(["Pharmacy", "Medication Safety", "Inventory Management", "Automation"]),
+            "results": "50% reduction in medication diversion incidents, 98% inventory accuracy, $300K annual cost savings",
+            "lessons_learned": "Biometric access initially met resistance but improved security. Real-time inventory prevented stockouts. Integration with Epic was complex but valuable."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Employee Wellness App",
+            "description": "Mobile app providing personalized wellness challenges, mental health resources, fitness tracking, and peer support for staff wellbeing.",
+            "hospital_name": "AdventHealth Palm Coast",
+            "department": "HR",
+            "implemented_date": (datetime.now() - timedelta(days=160)).isoformat(),
+            "contact_name": "Karen White",
+            "contact_email": "karen.white@adventhealth.com",
+            "tags": json.dumps(["Workforce Wellbeing", "Mental Health", "Employee Engagement", "Mobile App"]),
+            "results": "3,500 active users, 25% reduction in reported burnout, improved retention rates, positive culture impact",
+            "lessons_learned": "Gamification drove engagement. Privacy protections were essential. Leadership participation was key. Integrated with existing benefits programs."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Radiology AI Triage System",
+            "description": "AI algorithm that analyzes chest X-rays and CT scans to flag critical findings and prioritize radiologist worklist, improving turnaround time.",
+            "hospital_name": "AdventHealth Sebring",
+            "department": "Radiology",
+            "implemented_date": (datetime.now() - timedelta(days=400)).isoformat(),
+            "contact_name": "Dr. Maria Rodriguez",
+            "contact_email": "maria.rodriguez@adventhealth.com",
+            "tags": json.dumps(["AI/ML", "Radiology", "Clinical Excellence", "Triage"]),
+            "results": "50% reduction in critical finding notification time, 99.2% sensitivity for critical findings, improved patient outcomes",
+            "lessons_learned": "FDA clearance process was lengthy. Radiologist trust built through transparent accuracy reporting. Integration with PACS required vendor collaboration."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Supply Chain Demand Forecasting",
+            "description": "Predictive analytics system that forecasts supply needs based on historical usage, seasonal trends, and patient volume, optimizing inventory levels.",
+            "hospital_name": "AdventHealth Waterman",
+            "department": "Supply Chain",
+            "implemented_date": (datetime.now() - timedelta(days=350)).isoformat(),
+            "contact_name": "David Chen",
+            "contact_email": "david.chen@adventhealth.com",
+            "tags": json.dumps(["Supply Chain", "AI/ML", "Inventory Management", "Cost Reduction"]),
+            "results": "$800K annual cost savings, 30% reduction in stockouts, 25% reduction in excess inventory",
+            "lessons_learned": "Data quality from multiple systems was challenging. Required cross-functional team. Buyer adoption required demonstrating accuracy over time."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "title": "Patient Transport Tracking System",
+            "description": "Real-time GPS tracking of patient transport staff with automated dispatch and status updates, reducing wait times and improving coordination.",
+            "hospital_name": "AdventHealth Zephyrhills",
+            "department": "Patient Transport",
+            "implemented_date": (datetime.now() - timedelta(days=210)).isoformat(),
+            "contact_name": "Michael Brown",
+            "contact_email": "michael.brown@adventhealth.com",
+            "tags": json.dumps(["Patient Flow", "Transport", "GPS Tracking", "Operational Excellence"]),
+            "results": "40% reduction in transport wait times, 25% improvement in staff productivity, better patient experience scores",
+            "lessons_learned": "Staff initially concerned about tracking - transparent communication about purpose was key. Mobile devices needed to be durable. Integration with bed management system enhanced value."
+        }
+    ]
+    
+    for solution in solutions:
+        await db.execute("""
+            INSERT INTO solutions (id, title, description, hospital_name, department, implemented_date, contact_name, contact_email, tags, results, lessons_learned)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            solution["id"],
+            solution["title"],
+            solution["description"],
+            solution["hospital_name"],
+            solution["department"],
+            solution["implemented_date"],
+            solution["contact_name"],
+            solution["contact_email"],
+            solution["tags"],
+            solution["results"],
+            solution["lessons_learned"]
+        ))
+    
+    await db.commit()
+    print(f"Seeded {len(solutions)} existing solutions into database")
+
+async def seed_existing_projects(db):
+    """Seed database with realistic existing AdventHealth projects"""
+    import uuid
+    from datetime import datetime, timedelta
+    
+    projects = [
+        {
+            "id": str(uuid.uuid4()),
+            "name": "AI-Powered Bed Management Optimization",
+            "description": "Real-time bed availability tracking and predictive analytics to optimize patient placement and reduce wait times in ED and for admissions.",
+            "departments": json.dumps(["Emergency Department", "Inpatient Care", "IT"]),
+            "owner_name": "Dr. Sarah Chen",
+            "owner_email": "sarah.chen@adventhealth.com",
+            "tags": json.dumps(["AI/ML", "Patient Flow", "Capacity Management", "Azure"]),
+            "current_phase": "Pilot Testing",
+            "start_date": (datetime.now() - timedelta(days=120)).isoformat(),
+            "strategic_pillars": json.dumps(["AI/ML Innovation", "Operational Excellence", "Patient Experience"]),
+            "notes": "Currently piloting at 3 hospitals. Using Azure ML for predictive models. 15% reduction in ED wait times observed."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Virtual Sitter Program Expansion",
+            "description": "Remote patient monitoring using AI-powered video analytics to detect falls and patient distress, reducing need for 1:1 sitters.",
+            "departments": json.dumps(["Inpatient Care", "Nursing", "IT"]),
+            "owner_name": "Jennifer Martinez, RN",
+            "owner_email": "jennifer.martinez@adventhealth.com",
+            "tags": json.dumps(["AI/ML", "Patient Safety", "Workforce Efficiency", "Computer Vision"]),
+            "current_phase": "Scaling",
+            "start_date": (datetime.now() - timedelta(days=240)).isoformat(),
+            "strategic_pillars": json.dumps(["AI/ML Innovation", "Workforce Wellbeing", "Patient Experience"]),
+            "notes": "Deployed at 12 hospitals. Reduced sitter costs by $2.3M annually. Expanding to 25 more units in Q2."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Automated Discharge Planning Assistant",
+            "description": "AI-powered tool that analyzes patient records and suggests optimal discharge timing, transportation needs, and follow-up care coordination.",
+            "departments": json.dumps(["Case Management", "Inpatient Care", "IT"]),
+            "owner_name": "Michael Thompson",
+            "owner_email": "michael.thompson@adventhealth.com",
+            "tags": json.dumps(["AI/ML", "Discharge Planning", "Length of Stay", "Epic Integration"]),
+            "current_phase": "Development",
+            "start_date": (datetime.now() - timedelta(days=90)).isoformat(),
+            "strategic_pillars": json.dumps(["AI/ML Innovation", "Operational Excellence", "Patient Experience"]),
+            "notes": "Integrating with Epic EHR. Expected to reduce average length of stay by 0.5 days. Launch planned for Q3."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Radiology AI Worklist Prioritization",
+            "description": "Machine learning model that analyzes imaging orders and prioritizes critical cases for radiologist review, improving turnaround time for urgent findings.",
+            "departments": json.dumps(["Radiology", "IT", "Emergency Department"]),
+            "owner_name": "Dr. Robert Kim",
+            "owner_email": "robert.kim@adventhealth.com",
+            "tags": json.dumps(["AI/ML", "Radiology", "Clinical Excellence", "PACS Integration"]),
+            "current_phase": "Production",
+            "start_date": (datetime.now() - timedelta(days=365)).isoformat(),
+            "strategic_pillars": json.dumps(["AI/ML Innovation", "Clinical Excellence", "Patient Experience"]),
+            "notes": "Live at all hospitals. Reduced critical finding notification time by 40%. Processing 50K+ studies monthly."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Predictive Sepsis Early Warning System",
+            "description": "Real-time monitoring system using ML to detect early signs of sepsis in hospitalized patients, enabling faster intervention.",
+            "departments": json.dumps(["Inpatient Care", "ICU", "Quality & Safety", "IT"]),
+            "owner_name": "Dr. Amanda Foster",
+            "owner_email": "amanda.foster@adventhealth.com",
+            "tags": json.dumps(["AI/ML", "Clinical Excellence", "Patient Safety", "Epic Integration"]),
+            "current_phase": "Production",
+            "start_date": (datetime.now() - timedelta(days=450)).isoformat(),
+            "strategic_pillars": json.dumps(["AI/ML Innovation", "Clinical Excellence", "Patient Experience"]),
+            "notes": "Deployed system-wide. 25% improvement in sepsis mortality. Integrated with Epic Sepsis Model."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Staff Scheduling Optimization Platform",
+            "description": "AI-driven scheduling system that balances staff preferences, patient acuity, and regulatory requirements to create optimal nursing schedules.",
+            "departments": json.dumps(["Nursing", "HR", "IT"]),
+            "owner_name": "Lisa Anderson, CNO",
+            "owner_email": "lisa.anderson@adventhealth.com",
+            "tags": json.dumps(["AI/ML", "Workforce Management", "Scheduling", "Staff Satisfaction"]),
+            "current_phase": "Pilot Testing",
+            "start_date": (datetime.now() - timedelta(days=150)).isoformat(),
+            "strategic_pillars": json.dumps(["AI/ML Innovation", "Workforce Wellbeing", "Operational Excellence"]),
+            "notes": "Piloting in 5 units. Early results show 30% reduction in scheduling conflicts and improved staff satisfaction."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Patient Portal Enhancement with Chatbot",
+            "description": "AI-powered chatbot integrated into patient portal to answer common questions, schedule appointments, and provide pre-visit instructions.",
+            "departments": json.dumps(["IT", "Patient Experience", "Ambulatory Care"]),
+            "owner_name": "David Park",
+            "owner_email": "david.park@adventhealth.com",
+            "tags": json.dumps(["AI/ML", "Patient Portal", "Chatbot", "Azure Bot Service"]),
+            "current_phase": "Development",
+            "start_date": (datetime.now() - timedelta(days=60)).isoformat(),
+            "strategic_pillars": json.dumps(["AI/ML Innovation", "Patient Experience", "Operational Excellence"]),
+            "notes": "Using Azure OpenAI for natural language processing. Expected to handle 40% of routine inquiries. Launch Q2."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "OR Turnover Time Reduction Initiative",
+            "description": "Process improvement and technology integration to reduce operating room turnover time through better coordination and predictive scheduling.",
+            "departments": json.dumps(["Operating Room", "Surgery", "Supply Chain", "IT"]),
+            "owner_name": "Dr. James Wilson",
+            "owner_email": "james.wilson@adventhealth.com",
+            "tags": json.dumps(["Process Improvement", "OR Efficiency", "Scheduling", "IoT Sensors"]),
+            "current_phase": "Implementation",
+            "start_date": (datetime.now() - timedelta(days=180)).isoformat(),
+            "strategic_pillars": json.dumps(["Operational Excellence", "Clinical Excellence"]),
+            "notes": "Implementing IoT sensors and real-time dashboards. Target: reduce turnover from 45 to 30 minutes."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Remote Patient Monitoring for Chronic Conditions",
+            "description": "Home monitoring program using connected devices to track vitals for patients with CHF, COPD, and diabetes, reducing readmissions.",
+            "departments": json.dumps(["Ambulatory Care", "Cardiology", "Pulmonology", "IT"]),
+            "owner_name": "Dr. Maria Rodriguez",
+            "owner_email": "maria.rodriguez@adventhealth.com",
+            "tags": json.dumps(["Telehealth", "Remote Monitoring", "Chronic Care", "IoT"]),
+            "current_phase": "Scaling",
+            "start_date": (datetime.now() - timedelta(days=300)).isoformat(),
+            "strategic_pillars": json.dumps(["Patient Experience", "Clinical Excellence", "Operational Excellence"]),
+            "notes": "1,200 patients enrolled. 35% reduction in 30-day readmissions. Expanding to 5,000 patients by year-end."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Clinical Documentation Improvement with AI",
+            "description": "Natural language processing tool that analyzes physician notes and suggests documentation improvements for coding accuracy and completeness.",
+            "departments": json.dumps(["Health Information Management", "Revenue Cycle", "IT"]),
+            "owner_name": "Patricia Lee",
+            "owner_email": "patricia.lee@adventhealth.com",
+            "tags": json.dumps(["AI/ML", "Clinical Documentation", "Revenue Cycle", "NLP"]),
+            "current_phase": "Pilot Testing",
+            "start_date": (datetime.now() - timedelta(days=75)).isoformat(),
+            "strategic_pillars": json.dumps(["AI/ML Innovation", "Operational Excellence"]),
+            "notes": "Testing with 50 physicians. Early results show 20% improvement in documentation specificity. Azure OpenAI integration."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Supply Chain Demand Forecasting System",
+            "description": "Machine learning model that predicts supply needs based on historical usage, seasonal trends, and patient volume forecasts.",
+            "departments": json.dumps(["Supply Chain", "IT", "Finance"]),
+            "owner_name": "Thomas Garcia",
+            "owner_email": "thomas.garcia@adventhealth.com",
+            "tags": json.dumps(["AI/ML", "Supply Chain", "Inventory Management", "Cost Reduction"]),
+            "current_phase": "Production",
+            "start_date": (datetime.now() - timedelta(days=400)).isoformat(),
+            "strategic_pillars": json.dumps(["AI/ML Innovation", "Operational Excellence"]),
+            "notes": "Deployed system-wide. Reduced inventory costs by $4.5M annually. 98% forecast accuracy achieved."
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "name": "Employee Wellness and Burnout Prevention Program",
+            "description": "Digital platform with AI-driven personalized wellness recommendations, mental health resources, and burnout risk detection for staff.",
+            "departments": json.dumps(["HR", "Employee Health", "IT"]),
+            "owner_name": "Karen White",
+            "owner_email": "karen.white@adventhealth.com",
+            "tags": json.dumps(["Workforce Wellbeing", "Mental Health", "AI/ML", "Employee Engagement"]),
+            "current_phase": "Implementation",
+            "start_date": (datetime.now() - timedelta(days=100)).isoformat(),
+            "strategic_pillars": json.dumps(["Workforce Wellbeing", "AI/ML Innovation"]),
+            "notes": "Launching to 5,000 employees in Q2. Includes stress monitoring, resilience training, and peer support matching."
+        }
+    ]
+    
+    for project in projects:
+        await db.execute("""
+            INSERT INTO projects (id, name, description, departments, owner_name, owner_email, tags, current_phase, start_date, strategic_pillars, notes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            project["id"],
+            project["name"],
+            project["description"],
+            project["departments"],
+            project["owner_name"],
+            project["owner_email"],
+            project["tags"],
+            project["current_phase"],
+            project["start_date"],
+            project["strategic_pillars"],
+            project["notes"]
+        ))
+    
+    await db.commit()
+    print(f"Seeded {len(projects)} existing projects into database")
 
 async def init_db():
     async with aiosqlite.connect(DB_PATH) as db:
@@ -109,34 +525,117 @@ async def init_db():
                 FOREIGN KEY (idea_id) REFERENCES ideas(id)
             )
         """)
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS projects (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                description TEXT,
+                departments TEXT,
+                owner_name TEXT,
+                owner_email TEXT,
+                tags TEXT,
+                current_phase TEXT,
+                start_date TEXT,
+                strategic_pillars TEXT,
+                notes TEXT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS solutions (
+                id TEXT PRIMARY KEY,
+                title TEXT NOT NULL,
+                description TEXT,
+                hospital_name TEXT,
+                department TEXT,
+                implemented_date TEXT,
+                contact_name TEXT,
+                contact_email TEXT,
+                tags TEXT,
+                results TEXT,
+                lessons_learned TEXT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
         await db.commit()
+        
+        async with db.execute("SELECT COUNT(*) FROM projects") as cursor:
+            row = await cursor.fetchone()
+            if row[0] == 0:
+                await seed_existing_projects(db)
+        
+        async with db.execute("SELECT COUNT(*) FROM solutions") as cursor:
+            row = await cursor.fetchone()
+            if row[0] == 0:
+                await seed_existing_solutions(db)
 
 async def detect_systems(text: str) -> List[Dict[str, Any]]:
-    """Agent 1: System Context Engine - Detect AdventHealth systems mentioned in text"""
-    text_lower = text.lower()
-    detected = []
-    
-    async with aiosqlite.connect(DB_PATH) as db:
-        db.row_factory = aiosqlite.Row
-        async with db.execute("SELECT DISTINCT app_id, keyword, context FROM system_keywords") as cursor:
-            rows = await cursor.fetchall()
-            for row in rows:
-                if row['keyword'].lower() in text_lower:
-                    async with db.execute("SELECT * FROM applications WHERE id = ?", (row['app_id'],)) as app_cursor:
-                        app_row = await app_cursor.fetchone()
-                        if app_row:
-                            app_dict = dict(app_row)
-                            detected.append({
-                                "system": app_dict['name'],
-                                "category": app_dict['category'],
-                                "integration_level": app_dict['integration_level'],
-                                "typical_cost": app_dict['typical_integration_cost'],
-                                "typical_timeline_weeks": app_dict['typical_timeline_weeks'],
-                                "sme": app_dict['technical_sme_name']
-                            })
-                    break
-    
-    return detected
+    """Agent 1: System Context Analyzer - Use GPT-4o to detect healthcare systems and technologies"""
+    try:
+        prompt = f"""You are a healthcare IT systems expert. Analyze the following text and identify any healthcare systems, technologies, or platforms mentioned.
+
+TEXT TO ANALYZE:
+{text}
+
+COMMON HEALTHCARE SYSTEMS TO LOOK FOR:
+- Epic EHR (Electronic Health Records)
+- Cerner/Oracle Health
+- Azure AI/ML services
+- Microsoft Teams
+- Patient portals
+- Medication management systems (Pyxis, Omnicell)
+- PACS (Picture Archiving and Communication System)
+- Laboratory Information Systems (LIS)
+- Pharmacy systems
+- Telehealth platforms
+- Mobile health apps
+- IoT medical devices
+- Cloud infrastructure (Azure, AWS)
+
+For each system detected, provide:
+1. System name
+2. Category (EHR, AI/ML, Communication, Medication, Imaging, Lab, Pharmacy, Telehealth, Mobile, IoT, Cloud)
+3. Integration complexity (Low/Medium/High)
+4. Estimated integration cost range
+5. Typical timeline in weeks
+
+OUTPUT FORMAT (JSON):
+{{
+  "detectedSystems": [
+    {{
+      "system": "Epic EHR",
+      "category": "EHR",
+      "confidence": 0.95,
+      "integrationComplexity": "High",
+      "estimatedCostLow": 50000,
+      "estimatedCostHigh": 150000,
+      "typicalTimelineWeeks": 12,
+      "technicalSME": "Epic Integration Team"
+    }}
+  ]
+}}
+
+If no systems are detected, return {{"detectedSystems": []}}"""
+
+        model = os.getenv("AZURE_OPENAI_DEPLOYMENT_GPT4", "gpt-4o")
+        
+        response = openai_client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "You are a healthcare IT systems expert specializing in system integration and technology detection."},
+                {"role": "user", "content": prompt}
+            ],
+            response_format={"type": "json_object"}
+        )
+        
+        result = json.loads(response.choices[0].message.content)
+        detected_systems = result.get("detectedSystems", [])
+        
+        return detected_systems
+        
+    except Exception as e:
+        print(f"Error in detect_systems with GPT-4o: {e}")
+        return []
 
 async def analyze_idea_with_ai(idea_data: Dict[str, Any]) -> Dict[str, Any]:
     """Enhanced AI analysis with system detection"""
@@ -468,7 +967,7 @@ async def generate_sora_video(idea_data: Dict[str, Any], detected_systems: List[
                 "message": "Sora API not configured - missing SORA_ENDPOINT or SORA_API_KEY"
             }
         
-        prompt = build_healthcare_video_prompt(idea_data, detected_systems)
+        prompt = await generate_video_prompt_with_ai(idea_data, detected_systems)
         
         async with httpx.AsyncClient(timeout=30.0) as client:
             response = await client.post(
@@ -510,8 +1009,76 @@ async def generate_sora_video(idea_data: Dict[str, Any], detected_systems: List[
             "prompt": prompt if 'prompt' in locals() else "Error building prompt"
         }
 
-def build_healthcare_video_prompt(idea_data: Dict[str, Any], detected_systems: List[Dict[str, Any]]) -> str:
-    """Build a detailed prompt for Sora video generation based on healthcare idea"""
+async def generate_video_prompt_with_ai(idea_data: Dict[str, Any], detected_systems: List[Dict[str, Any]]) -> str:
+    """Agent 5: Video Prompt Generator - Use AI to create compelling Sora video prompts"""
+    try:
+        title = idea_data.get('title', '')
+        description = idea_data.get('description', '')
+        problem = idea_data.get('problemStatement', '')
+        solution = idea_data.get('proposedSolution', '')
+        benefit = idea_data.get('expectedBenefit', '')
+        
+        system_names = [s['system'] for s in detected_systems] if detected_systems else []
+        systems_text = f"Systems involved: {', '.join(system_names)}" if system_names else "No specific systems detected"
+        
+        prompt = f"""You are a healthcare video production expert creating prompts for Sora video generation. 
+Your goal is to create a compelling 5-second video that demonstrates a healthcare innovation idea.
+
+INNOVATION IDEA:
+Title: {title}
+Problem: {problem}
+Solution: {solution}
+Expected Benefit: {benefit}
+{systems_text}
+
+REQUIREMENTS:
+1. Create a visual story that shows BEFORE and AFTER scenarios
+2. Include specific healthcare settings (hospital room, nurse station, patient home, etc.)
+3. Show real people (nurses, doctors, patients) using the solution
+4. Demonstrate clear ROI or patient impact visually
+5. Keep it realistic and professional
+6. Focus on the human element and positive outcomes
+7. Make it suitable for executive presentations
+
+OUTPUT FORMAT:
+Provide a detailed scene-by-scene description for a 5-second video. Each scene should be 1-2 sentences describing exactly what happens visually. Include:
+- Setting and lighting
+- People and their actions
+- Technology/systems being used
+- Visual indicators of success (green checkmarks, happy faces, efficiency metrics)
+- Professional healthcare environment details
+
+Write the prompt as a continuous narrative, not bullet points. Be specific about what appears on screens, facial expressions, and environmental details."""
+
+        model = os.getenv("AZURE_OPENAI_DEPLOYMENT_O3", "o3")
+        
+        response = openai_client.chat.completions.create(
+            model=model,
+            messages=[
+                {"role": "system", "content": "You are a healthcare video production expert specializing in creating compelling visual narratives for Sora video generation."},
+                {"role": "user", "content": prompt}
+            ]
+        )
+        
+        video_prompt = response.choices[0].message.content
+        if video_prompt:
+            video_prompt = video_prompt.strip()
+        
+        print(f"AI-generated video prompt using {model}: {video_prompt[:100] if video_prompt else 'EMPTY'}...")
+        print(f"Response finish_reason: {response.choices[0].finish_reason}")
+        
+        if not video_prompt:
+            print(f"Warning: AI returned empty prompt. Full response: {response}")
+            return build_healthcare_video_prompt_fallback(idea_data, detected_systems)
+        
+        return video_prompt
+        
+    except Exception as e:
+        print(f"Error generating video prompt with AI: {e}")
+        return build_healthcare_video_prompt_fallback(idea_data, detected_systems)
+
+def build_healthcare_video_prompt_fallback(idea_data: Dict[str, Any], detected_systems: List[Dict[str, Any]]) -> str:
+    """Fallback prompt builder if AI generation fails"""
     title = idea_data.get('title', '')
     description = idea_data.get('description', '')
     solution = idea_data.get('proposedSolution', '')
@@ -615,9 +1182,51 @@ async def agent_sora(idea_id: str = Query(...)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+async def get_azure_ai_token() -> str:
+    """Get Azure AD bearer token for AI Foundry access"""
+    if not AZURE_TENANT_ID or not AZURE_CLIENT_ID or not AZURE_CLIENT_SECRET:
+        raise HTTPException(status_code=500, detail="Azure AD credentials not configured")
+    
+    credential = ClientSecretCredential(
+        tenant_id=AZURE_TENANT_ID,
+        client_id=AZURE_CLIENT_ID,
+        client_secret=AZURE_CLIENT_SECRET
+    )
+    scope = "https://ai.azure.com/.default"
+    token = credential.get_token(scope)
+    return token.token
+
+async def get_sora_video_assets(generation_id: str) -> Optional[str]:
+    """Get video download URL from AI Foundry for a specific generation"""
+    try:
+        if not AZURE_AI_PROJECT_ENDPOINT or not AZURE_AI_PROJECT_NAME:
+            return None
+        
+        token = await asyncio.to_thread(get_azure_ai_token)
+        headers = {"Authorization": f"Bearer {token}"}
+        
+        assets_url = f"{AZURE_AI_PROJECT_ENDPOINT}/projects/{AZURE_AI_PROJECT_NAME}/generations/{generation_id}/assets"
+        
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get(assets_url, headers=headers)
+            
+            if response.status_code == 200:
+                assets_data = response.json()
+                assets = assets_data.get("value", [])
+                
+                for asset in assets:
+                    video_url = asset.get("download_url") or asset.get("sasUrl") or asset.get("uri")
+                    if video_url and asset.get("mime_type", "").startswith("video/"):
+                        return video_url
+        
+        return None
+    except Exception as e:
+        print(f"Error getting video assets: {e}")
+        return None
+
 @app.get("/api/agents/sora-status/{job_id}")
 async def get_sora_status(job_id: str):
-    """Check the status of a Sora video generation job"""
+    """Check the status of a Sora video generation job and resolve video URLs"""
     try:
         if not SORA_ENDPOINT or not SORA_API_KEY:
             raise HTTPException(status_code=500, detail="Sora API not configured")
@@ -632,11 +1241,22 @@ async def get_sora_status(job_id: str):
             
             if response.status_code == 200:
                 job_data = response.json()
+                status = job_data.get("status", "unknown")
+                generations = job_data.get("generations", [])
+                
+                if status == "succeeded" and generations:
+                    for gen in generations:
+                        gen_id = gen.get("id")
+                        if gen_id and not gen.get("url"):
+                            video_url = await get_sora_video_assets(gen_id)
+                            if video_url:
+                                gen["url"] = video_url
+                
                 return {
-                    "status": job_data.get("status", "unknown"),
+                    "status": status,
                     "job_id": job_data.get("id"),
                     "created_at": job_data.get("created_at"),
-                    "generations": job_data.get("generations", []),
+                    "generations": generations,
                     "error": job_data.get("error")
                 }
             else:
@@ -724,5 +1344,417 @@ async def get_agent_analysis(idea_id: str):
                 }
             else:
                 raise HTTPException(status_code=404, detail="Analysis not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/seed-ideas")
+async def seed_ideas():
+    """Seed database with 50 realistic healthcare innovation ideas"""
+    import uuid
+    from datetime import datetime, timedelta
+    
+    async with aiosqlite.connect(DB_PATH) as db:
+        async with db.execute("SELECT COUNT(*) FROM ideas") as cursor:
+            row = await cursor.fetchone()
+            if row[0] > 0:
+                return {"message": f"Database already has {row[0]} ideas. Skipping seed."}
+    
+    ideas = [
+        {"title": "AI-Powered Bed Management", "dept": "Emergency Department", "cat": "Technology/Digital Innovation"},
+        {"title": "Mobile Medication Scanning", "dept": "Nursing", "cat": "Patient Experience Enhancement"},
+        {"title": "Virtual Reality Pain Management", "dept": "Pain Management", "cat": "Clinical Excellence/Quality"},
+        {"title": "Automated Discharge Instructions", "dept": "Nursing", "cat": "Patient Experience Enhancement"},
+        {"title": "Smart Wheelchair Tracking", "dept": "Patient Transport", "cat": "Process Improvement"},
+        {"title": "Predictive Staffing Model", "dept": "Nursing", "cat": "Workforce/Culture"},
+        {"title": "Patient Portal Video Visits", "dept": "Ambulatory Care", "cat": "Technology/Digital Innovation"},
+        {"title": "OR Turnover Time Reduction", "dept": "Operating Room", "cat": "Process Improvement"},
+        {"title": "Remote Patient Monitoring", "dept": "Cardiology", "cat": "Technology/Digital Innovation"},
+        {"title": "Clinical Documentation AI", "dept": "Health Information Management", "cat": "Technology/Digital Innovation"},
+        {"title": "Supply Chain Forecasting", "dept": "Supply Chain", "cat": "Cost Reduction/Revenue Optimization"},
+        {"title": "Employee Wellness Program", "dept": "HR", "cat": "Workforce/Culture"},
+        {"title": "Sepsis Early Warning System", "dept": "ICU", "cat": "Clinical Excellence/Quality"},
+        {"title": "Radiology AI Triage", "dept": "Radiology", "cat": "Technology/Digital Innovation"},
+        {"title": "Pharmacy Automated Dispensing", "dept": "Pharmacy", "cat": "Patient Experience Enhancement"},
+        {"title": "Patient Experience Surveys", "dept": "Patient Experience", "cat": "Patient Experience Enhancement"},
+        {"title": "Nurse Shift Handoff Tool", "dept": "Nursing", "cat": "Clinical Excellence/Quality"},
+        {"title": "Rapid Response Alerts", "dept": "ICU", "cat": "Clinical Excellence/Quality"},
+        {"title": "OR Supply Preference Cards", "dept": "Operating Room", "cat": "Process Improvement"},
+        {"title": "Telehealth Expansion", "dept": "Ambulatory Care", "cat": "Technology/Digital Innovation"},
+        {"title": "Patient Transport Tracking", "dept": "Patient Transport", "cat": "Process Improvement"},
+        {"title": "Fall Prevention Program", "dept": "Nursing", "cat": "Clinical Excellence/Quality"},
+        {"title": "Lab Results Notification", "dept": "Laboratory", "cat": "Technology/Digital Innovation"},
+        {"title": "Visitor Management System", "dept": "Security", "cat": "Technology/Digital Innovation"},
+        {"title": "Staff Scheduling Optimization", "dept": "Nursing", "cat": "Workforce/Culture"},
+        {"title": "Patient Education Videos", "dept": "Patient Experience", "cat": "Patient Experience Enhancement"},
+        {"title": "Infection Control Monitoring", "dept": "Quality & Safety", "cat": "Clinical Excellence/Quality"},
+        {"title": "Revenue Cycle Automation", "dept": "Revenue Cycle", "cat": "Cost Reduction/Revenue Optimization"},
+        {"title": "Physician Burnout Prevention", "dept": "HR", "cat": "Workforce/Culture"},
+        {"title": "Emergency Preparedness", "dept": "Emergency Management", "cat": "Regulatory/Compliance"},
+        {"title": "Patient Meal Ordering App", "dept": "Food Services", "cat": "Patient Experience Enhancement"},
+        {"title": "Environmental Services Tracking", "dept": "Environmental Services", "cat": "Process Improvement"},
+        {"title": "Interpreter Services", "dept": "Patient Experience", "cat": "Patient Experience Enhancement"},
+        {"title": "Cardiac Monitoring Alerts", "dept": "Cardiology", "cat": "Clinical Excellence/Quality"},
+        {"title": "Pediatric Play Therapy", "dept": "Pediatrics", "cat": "Patient Experience Enhancement"},
+        {"title": "Wound Care Documentation", "dept": "Nursing", "cat": "Clinical Excellence/Quality"},
+        {"title": "Pharmacy Delivery Drones", "dept": "Pharmacy", "cat": "Technology/Digital Innovation"},
+        {"title": "Patient Belongings Tracking", "dept": "Security", "cat": "Process Improvement"},
+        {"title": "Chaplain Services", "dept": "Spiritual Care", "cat": "Patient Experience Enhancement"},
+        {"title": "Equipment Maintenance", "dept": "Biomedical Engineering", "cat": "Process Improvement"},
+        {"title": "Staff Recognition Program", "dept": "HR", "cat": "Workforce/Culture"},
+        {"title": "Patient Rounding Software", "dept": "Nursing", "cat": "Technology/Digital Innovation"},
+        {"title": "Surgical Site Prevention", "dept": "Operating Room", "cat": "Clinical Excellence/Quality"},
+        {"title": "Ambulance Diversion Reduction", "dept": "Emergency Department", "cat": "Process Improvement"},
+        {"title": "Palliative Care Consultation", "dept": "Palliative Care", "cat": "Clinical Excellence/Quality"},
+        {"title": "Patient Wayfinding App", "dept": "Facilities", "cat": "Patient Experience Enhancement"},
+        {"title": "Clinical Trial Recruitment", "dept": "Research", "cat": "Clinical Excellence/Quality"},
+        {"title": "Vendor Credentialing", "dept": "Supply Chain", "cat": "Process Improvement"},
+        {"title": "Patient Satisfaction Rounding", "dept": "Patient Experience", "cat": "Patient Experience Enhancement"},
+        {"title": "Code Blue Response Time", "dept": "Emergency Response", "cat": "Clinical Excellence/Quality"}
+    ]
+    
+    ideas_to_seed = []
+    for idx, t in enumerate(ideas, start=1):
+        ideas_to_seed.append({
+            "id": str(uuid.uuid4()),
+            "title": t["title"],
+            "description": f"Innovation to improve {t['title'].lower()}.",
+            "problemStatement": f"Current process needs improvement.",
+            "proposedSolution": f"Implement {t['title'].lower()} improvements.",
+            "expectedBenefit": "Improve efficiency and patient care.",
+            "targetUsers": f"{t['dept']} staff",
+            "successMetrics": "Efficiency, satisfaction scores",
+            "submitterName": f"Staff {idx}",
+            "submitterDepartment": t["dept"],
+            "submitterHospital": "AdventHealth",
+            "submitterContact": f"staff{idx}@adventhealth.com",
+            "categoryType": t["cat"],
+            "functionalArea": t["dept"],
+            "status": "Under Review",
+            "upvotes": 10 + (idx % 20),
+            "downvotes": idx % 5,
+            "commentCount": idx % 8,
+            "createdAt": (datetime.now() - timedelta(days=idx * 2)).isoformat()
+        })
+    
+    try:
+        async with aiosqlite.connect(DB_PATH) as db:
+            for idea in ideas_to_seed:
+                await db.execute("""
+                    INSERT INTO ideas (id, title, description, problemStatement, proposedSolution, expectedBenefit, 
+                                     targetUsers, successMetrics, submitterName, submitterDepartment, submitterHospital,
+                                     submitterContact, categoryType, functionalArea, status, upvotes, downvotes, 
+                                     commentCount, createdAt)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    idea["id"], idea["title"], idea["description"], idea["problemStatement"],
+                    idea["proposedSolution"], idea["expectedBenefit"], idea["targetUsers"],
+                    idea["successMetrics"], idea["submitterName"], idea["submitterDepartment"],
+                    idea["submitterHospital"], idea["submitterContact"], idea["categoryType"],
+                    idea["functionalArea"], idea["status"], idea["upvotes"], idea["downvotes"],
+                    idea["commentCount"], idea["createdAt"]
+                ))
+            await db.commit()
+        
+        return {"message": f"Successfully seeded {len(ideas_to_seed)} ideas"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/projects")
+async def get_projects():
+    """Get all existing projects"""
+    try:
+        async with aiosqlite.connect(DB_PATH) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute("SELECT * FROM projects ORDER BY start_date DESC") as cursor:
+                rows = await cursor.fetchall()
+                projects = []
+                for row in rows:
+                    project_dict = dict(row)
+                    project_dict['departments'] = json.loads(project_dict['departments'])
+                    project_dict['tags'] = json.loads(project_dict['tags'])
+                    project_dict['strategic_pillars'] = json.loads(project_dict['strategic_pillars'])
+                    projects.append(project_dict)
+                return projects
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/solutions")
+async def get_solutions():
+    """Get all existing solutions from other hospitals"""
+    try:
+        async with aiosqlite.connect(DB_PATH) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute("SELECT * FROM solutions ORDER BY implemented_date DESC") as cursor:
+                rows = await cursor.fetchall()
+                solutions = []
+                for row in rows:
+                    solution_dict = dict(row)
+                    solution_dict['tags'] = json.loads(solution_dict['tags'])
+                    solutions.append(solution_dict)
+                return solutions
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/matches/{idea_id}")
+async def get_matches(idea_id: str):
+    """Get matching projects and solutions for an idea using GPT-4o"""
+    try:
+        async with aiosqlite.connect(DB_PATH) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute("SELECT * FROM ideas WHERE id = ?", (idea_id,)) as cursor:
+                idea_row = await cursor.fetchone()
+                if not idea_row:
+                    raise HTTPException(status_code=404, detail="Idea not found")
+                idea = dict(idea_row)
+            
+            async with db.execute("SELECT * FROM projects") as cursor:
+                project_rows = await cursor.fetchall()
+                projects = []
+                for row in project_rows:
+                    p = dict(row)
+                    p['departments'] = json.loads(p['departments'])
+                    p['tags'] = json.loads(p['tags'])
+                    p['strategic_pillars'] = json.loads(p['strategic_pillars'])
+                    projects.append(p)
+            
+            async with db.execute("SELECT * FROM solutions") as cursor:
+                solution_rows = await cursor.fetchall()
+                solutions = []
+                for row in solution_rows:
+                    s = dict(row)
+                    s['tags'] = json.loads(s['tags'])
+                    solutions.append(s)
+        
+        try:
+            prompt = f"""You are a healthcare innovation matching expert. Analyze this new idea and find the top 3 most relevant matches from existing projects and solutions.
+
+NEW IDEA:
+Title: {idea['title']}
+Description: {idea['description']}
+Problem: {idea['problemStatement']}
+Solution: {idea['proposedSolution']}
+Department: {idea['submitterDepartment']}
+Category: {idea['categoryType']}
+
+EXISTING PROJECTS:
+{json.dumps([{'id': p['id'], 'title': p['title'], 'description': p['description'], 'departments': p['departments'], 'tags': p['tags']} for p in projects], indent=2)}
+
+EXISTING SOLUTIONS FROM OTHER HOSPITALS:
+{json.dumps([{'id': s['id'], 'title': s['title'], 'description': s['description'], 'hospital': s['hospital_name'], 'department': s['department'], 'tags': s['tags']} for s in solutions], indent=2)}
+
+Return the top 3 matches (can be projects or solutions) with:
+1. Match score (0-100)
+2. Match rationale (why it's relevant)
+3. Overlap areas (specific commonalities)
+4. Recommendation (how to leverage the existing work)
+
+OUTPUT FORMAT (JSON):
+{{
+  "matches": [
+    {{
+      "type": "project" or "solution",
+      "id": "...",
+      "title": "...",
+      "matchScore": 85,
+      "rationale": "...",
+      "overlapAreas": ["area1", "area2"],
+      "recommendation": "..."
+    }}
+  ]
+}}"""
+
+            model = os.getenv("AZURE_OPENAI_DEPLOYMENT_GPT4", "gpt-4o")
+            
+            response = openai_client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": "You are a healthcare innovation matching expert specializing in identifying synergies between new ideas and existing projects."},
+                    {"role": "user", "content": prompt}
+                ],
+                response_format={"type": "json_object"}
+            )
+            
+            result = json.loads(response.choices[0].message.content)
+            matches = result.get("matches", [])
+            
+            enriched_matches = []
+            for match in matches[:3]:  # Top 3
+                if match['type'] == 'project':
+                    full_item = next((p for p in projects if p['id'] == match['id']), None)
+                else:
+                    full_item = next((s for s in solutions if s['id'] == match['id']), None)
+                
+                if full_item:
+                    enriched_matches.append({
+                        **match,
+                        "details": full_item
+                    })
+            
+            return {"idea_id": idea_id, "matches": enriched_matches}
+            
+        except Exception as e:
+            print(f"Error using GPT-4o for matching: {e}")
+            fallback_matches = []
+            
+            idea_keywords = set(idea['title'].lower().split() + idea['description'].lower().split())
+            
+            for p in projects:
+                p_keywords = set(p['title'].lower().split() + p['description'].lower().split())
+                overlap = len(idea_keywords & p_keywords)
+                if overlap > 2:
+                    fallback_matches.append({
+                        "type": "project",
+                        "id": p['id'],
+                        "title": p['title'],
+                        "matchScore": min(overlap * 10, 100),
+                        "rationale": f"Shares {overlap} common keywords",
+                        "overlapAreas": list(idea_keywords & p_keywords)[:3],
+                        "recommendation": "Review project details for potential collaboration",
+                        "details": p
+                    })
+            
+            for s in solutions:
+                s_keywords = set(s['title'].lower().split() + s['description'].lower().split())
+                overlap = len(idea_keywords & s_keywords)
+                if overlap > 2:
+                    fallback_matches.append({
+                        "type": "solution",
+                        "id": s['id'],
+                        "title": s['title'],
+                        "matchScore": min(overlap * 10, 100),
+                        "rationale": f"Shares {overlap} common keywords",
+                        "overlapAreas": list(idea_keywords & s_keywords)[:3],
+                        "recommendation": f"Contact {s['contact_name']} at {s['hospital_name']}",
+                        "details": s
+                    })
+            
+            fallback_matches.sort(key=lambda x: x['matchScore'], reverse=True)
+            return {"idea_id": idea_id, "matches": fallback_matches[:3]}
+            
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/email/compose")
+async def compose_email(request: dict):
+    """Compose email for executive to connect requester with existing project/solution"""
+    try:
+        idea_id = request.get("idea_id")
+        match_id = request.get("match_id")
+        match_type = request.get("match_type")  # "project" or "solution"
+        exec_name = request.get("exec_name", "Executive")
+        
+        async with aiosqlite.connect(DB_PATH) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute("SELECT * FROM ideas WHERE id = ?", (idea_id,)) as cursor:
+                idea_row = await cursor.fetchone()
+                if not idea_row:
+                    raise HTTPException(status_code=404, detail="Idea not found")
+                idea = dict(idea_row)
+            
+            if match_type == "project":
+                async with db.execute("SELECT * FROM projects WHERE id = ?", (match_id,)) as cursor:
+                    match_row = await cursor.fetchone()
+                    if not match_row:
+                        raise HTTPException(status_code=404, detail="Project not found")
+                    match = dict(match_row)
+                    match['departments'] = json.loads(match['departments'])
+                    match['tags'] = json.loads(match['tags'])
+            else:
+                async with db.execute("SELECT * FROM solutions WHERE id = ?", (match_id,)) as cursor:
+                    match_row = await cursor.fetchone()
+                    if not match_row:
+                        raise HTTPException(status_code=404, detail="Solution not found")
+                    match = dict(match_row)
+                    match['tags'] = json.loads(match['tags'])
+        
+        try:
+            if match_type == "project":
+                context = f"""EXISTING PROJECT:
+Title: {match['title']}
+Description: {match['description']}
+Status: {match['status']}
+Lead: {match['project_lead']}
+Contact: {match['contact_email']}"""
+            else:
+                context = f"""EXISTING SOLUTION (from {match['hospital_name']}):
+Title: {match['title']}
+Description: {match['description']}
+Results: {match['results']}
+Contact: {match['contact_name']} ({match['contact_email']})
+Lessons Learned: {match['lessons_learned']}"""
+            
+            prompt = f"""You are composing an email from a healthcare executive to connect an innovation requester with an existing project/solution that meets their needs.
+
+REQUESTER'S IDEA:
+Title: {idea['title']}
+Submitted by: {idea['submitterName']} ({idea['submitterDepartment']})
+Contact: {idea['submitterContact']}
+Problem: {idea['problemStatement']}
+Proposed Solution: {idea['proposedSolution']}
+
+{context}
+
+Compose a professional, warm email (150-220 words) that:
+1. Acknowledges the requester's innovative thinking
+2. Explains that a similar project/solution already exists
+3. Highlights how it addresses their needs
+4. Provides contact information for collaboration
+5. Encourages them to connect and learn from the existing work
+6. Maintains an encouraging tone about continuing to submit ideas
+
+OUTPUT FORMAT (JSON):
+{{
+  "subject": "...",
+  "greeting": "Hi {idea['submitterName'].split()[0]},",
+  "body_paragraphs": ["paragraph1", "paragraph2", "paragraph3"],
+  "call_to_action": "...",
+  "signature": "{exec_name}"
+}}"""
+
+            model = os.getenv("AZURE_OPENAI_DEPLOYMENT_GPT4", "gpt-4o")
+            
+            response = openai_client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": "You are a healthcare executive composing emails to connect innovators with existing solutions."},
+                    {"role": "user", "content": prompt}
+                ],
+                response_format={"type": "json_object"}
+            )
+            
+            email = json.loads(response.choices[0].message.content)
+            return email
+            
+        except Exception as e:
+            print(f"Error using GPT-4o for email composition: {e}")
+            if match_type == "project":
+                return {
+                    "subject": f"Great news about your idea: {idea['title']}",
+                    "greeting": f"Hi {idea['submitterName'].split()[0]},",
+                    "body_paragraphs": [
+                        f"Thank you for submitting your innovative idea about {idea['title']}. Your thinking aligns perfectly with our strategic priorities!",
+                        f"I wanted to let you know that we already have a project underway that addresses this need: '{match['title']}' led by {match['project_lead']}. This project is currently {match['status'].lower()} and has made significant progress.",
+                        f"I'd encourage you to connect with {match['project_lead']} at {match['contact_email']} to learn more and see how you might contribute your insights to this effort."
+                    ],
+                    "call_to_action": "Please keep the great ideas coming - your engagement is exactly what drives innovation at AdventHealth!",
+                    "signature": exec_name
+                }
+            else:
+                return {
+                    "subject": f"Existing solution for your idea: {idea['title']}",
+                    "greeting": f"Hi {idea['submitterName'].split()[0]},",
+                    "body_paragraphs": [
+                        f"Thank you for your innovative idea about {idea['title']}. I'm excited to share that {match['hospital_name']} has already implemented a similar solution!",
+                        f"Their '{match['title']}' initiative achieved impressive results: {match['results']}. {match['contact_name']} would be an excellent resource to learn from their experience.",
+                        f"I'd encourage you to reach out to {match['contact_name']} at {match['contact_email']} to discuss how we might adapt their approach for our needs."
+                    ],
+                    "call_to_action": "Your innovative thinking is valuable - please continue sharing ideas!",
+                    "signature": exec_name
+                }
+            
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
