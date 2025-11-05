@@ -1,10 +1,10 @@
-# AdventHealth Innovation Platform
+# ContosoHealth Innovation Platform
 
 A comprehensive healthcare innovation management platform that empowers staff to submit ideas, collaborate with colleagues, and see their innovations transform into real projects that improve patient care.
 
 ## Overview
 
-The AdventHealth Innovation Platform is a modern, AI-powered solution designed to capture, analyze, and implement healthcare innovations from frontline staff across all 55 AdventHealth hospitals. The platform features dual-persona views (Staff and Executive), social collaboration tools, gamification, and comprehensive success tracking.
+The ContosoHealth Innovation Platform is a modern, AI-powered solution designed to capture, analyze, and implement healthcare innovations from frontline staff across all 55 ContosoHealth hospitals. The platform features dual-persona views (Staff and Executive), social collaboration tools, gamification, and comprehensive success tracking.
 
 ## Key Features
 
@@ -79,7 +79,7 @@ Showcase implemented ideas with complete journey narratives:
 **Journey Timeline:**
 1. **How It Started**: Original submission from staff member
 2. **How It Grew**: Community engagement and refinement
-3. **AdventHealth Took Action**: Project launch and implementation
+3. **ContosoHealth Took Action**: Project launch and implementation
 4. **Timeline**: Detailed timeline from submission to rollout
 
 **Dual-Persona Impact Metrics:**
@@ -129,7 +129,7 @@ Quick and easy submission form:
 The platform features 4 AI agents that automatically analyze every submitted idea:
 
 #### Agent 1: System Context Engine
-**Purpose:** Real-time detection of AdventHealth systems mentioned in ideas
+**Purpose:** Real-time detection of ContosoHealth systems mentioned in ideas
 
 **Capabilities:**
 - Detects systems from keywords (Epic, Pyxis, Snowflake, Workday, ServiceNow, Azure, Power Platform, Sora)
@@ -159,12 +159,12 @@ The platform features 4 AI agents that automatically analyze every submitted ide
 - **Technical (1-10):** Integration complexity, API availability
 - **Operational (1-10):** Change management, workflow disruption
 - **Financial (1-10):** ROI, payback period, budget fit
-- **Strategic (1-10):** Alignment with AdventHealth priorities
+- **Strategic (1-10):** Alignment with ContosoHealth priorities
 
 **Output:** Overall score (1-10), dimension breakdown with reasoning, recommendation (APPROVE/REVIEW/DEFER), confidence level
 
 #### Agent 4: Internal Solution Discovery
-**Purpose:** Find similar solutions already implemented at other AdventHealth hospitals
+**Purpose:** Find similar solutions already implemented at other ContosoHealth hospitals
 
 **Capabilities:**
 - Searches pain points database for similar problems
@@ -252,8 +252,8 @@ The platform features 4 AI agents that automatically analyze every submitted ide
 ## Project Structure
 
 ```
-adventhealth-innovation-platform/
-├── adventhealth-innovation-demo/          # Frontend React application
+contosohealth-innovation-platform/
+├── contosohealth-innovation-demo/          # Frontend React application
 │   ├── public/
 │   │   └── avatars/                       # Profile photos (20 images)
 │   ├── src/
@@ -264,17 +264,17 @@ adventhealth-innovation-platform/
 │   ├── package.json
 │   ├── tsconfig.json
 │   └── vite.config.ts
-├── adventhealth-backend/                  # Backend FastAPI application
+├── contosohealth-backend/                  # Backend FastAPI application
 │   ├── app/
 │   │   └── main.py                        # FastAPI server
 │   ├── .env                               # Environment variables (Azure OpenAI)
 │   ├── load_50_ideas.py                   # Script to load 50 ideas into database
 │   ├── migrate_data.py                    # Database migration script
-│   └── adventhealth_ideas.db              # SQLite database
+│   └── contosohealth_ideas.db              # SQLite database
 ├── docs/                                  # Documentation
 │   ├── Software-Design-Specification.md
 │   ├── Team-Roles-Summary.md
-│   └── AdventHealth-Innovation-Platform-Software-Description.md
+│   └── ContosoHealth-Innovation-Platform-Software-Description.md
 ├── 50-diverse-healthcare-ideas.json       # 50 realistic healthcare ideas
 └── README.md                              # This file
 ```
@@ -290,7 +290,7 @@ adventhealth-innovation-platform/
 ### Frontend Setup
 
 ```bash
-cd adventhealth-innovation-demo
+cd contosohealth-innovation-demo
 npm install
 npm run dev
 ```
@@ -300,7 +300,7 @@ The frontend will be available at `http://localhost:5173`
 ### Backend Setup
 
 ```bash
-cd adventhealth-backend
+cd contosohealth-backend
 pip install fastapi uvicorn aiosqlite python-dotenv openai
 python -m uvicorn app.main:app --reload
 ```
@@ -310,7 +310,7 @@ The backend API will be available at `http://localhost:8000`
 ### Load Demo Data
 
 ```bash
-cd adventhealth-backend
+cd contosohealth-backend
 python load_50_ideas.py
 ```
 
@@ -318,7 +318,7 @@ This will populate the database with 50 diverse healthcare innovation ideas.
 
 ### Environment Variables
 
-Create a `.env` file in `adventhealth-backend/` with:
+Create a `.env` file in `contosohealth-backend/` with:
 
 ```
 AZURE_OPENAI_ENDPOINT=your-endpoint-here
@@ -417,17 +417,17 @@ This is a fully functional demo with:
 - App Service/hosting: ~$500/month
 - **Annual run rate: ~$90K-120K Azure consumption**
 
-This aligns with AdventHealth's Apps & AI bucket for FY26 planning.
+This aligns with ContosoHealth's Apps & AI bucket for FY26 planning.
 
 ## Support & Documentation
 
 - **Software Design Specification**: See `docs/Software-Design-Specification.md`
 - **Team Roles Summary**: See `docs/Team-Roles-Summary.md`
-- **Software Description**: See `docs/AdventHealth-Innovation-Platform-Software-Description.md`
+- **Software Description**: See `docs/ContosoHealth-Innovation-Platform-Software-Description.md`
 
 ## License
 
-This is a demo application built for AdventHealth innovation platform evaluation.
+This is a demo application built for ContosoHealth innovation platform evaluation.
 
 ## Contact
 
@@ -437,4 +437,4 @@ For questions or feedback, contact:
 
 ---
 
-**Built with ❤️ for AdventHealth to transform healthcare innovation**
+**Built with ❤️ for ContosoHealth to transform healthcare innovation**

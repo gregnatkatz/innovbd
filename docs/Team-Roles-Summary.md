@@ -1,15 +1,15 @@
-# AdventHealth Innovation Platform - Team Roles Summary
+# ContosoHealth Innovation Platform - Team Roles Summary
 
 **Version:** 1.0  
 **Date:** November 3, 2025  
 **Project:** AI-Powered Healthcare Innovation Management Platform  
-**Client:** AdventHealth (55 hospitals, $19.8B revenue)
+**Client:** ContosoHealth (55 hospitals, $19.8B revenue)
 
 ---
 
 ## Executive Summary
 
-This document outlines the team structure, roles, and responsibilities required to successfully design, build, deploy, and maintain the AdventHealth Innovation Platform. The project requires collaboration between Microsoft solution architects, AdventHealth IT staff, clinical champions, and executive sponsors.
+This document outlines the team structure, roles, and responsibilities required to successfully design, build, deploy, and maintain the ContosoHealth Innovation Platform. The project requires collaboration between Microsoft solution architects, ContosoHealth IT staff, clinical champions, and executive sponsors.
 
 ---
 
@@ -34,7 +34,7 @@ This document outlines the team structure, roles, and responsibilities required 
   - Power Platform and Azure service selection
   - Technical documentation and specifications
   - Demo development and presentation
-  - AdventHealth stakeholder engagement
+  - ContosoHealth stakeholder engagement
 - Key deliverables:
   - Software design specification
   - Demo application
@@ -80,7 +80,7 @@ This document outlines the team structure, roles, and responsibilities required 
 
 ---
 
-## 2. AdventHealth Team
+## 2. ContosoHealth Team
 
 ### 2.1 Executive Sponsors
 
@@ -392,7 +392,7 @@ This document outlines the team structure, roles, and responsibilities required 
 - Lead Developer (Chair)
 - Microsoft Azure Specialist
 - Microsoft Power Platform Architect
-- AdventHealth IT Architect
+- ContosoHealth IT Architect
 - Security Specialist
 - Data Architect
 
@@ -430,7 +430,7 @@ This document outlines the team structure, roles, and responsibilities required 
 
 ### 4.1 Key Activities
 
-| Activity | Microsoft Team | AdventHealth Exec | Project Manager | Technical Team | Clinical Champions | Change Mgmt |
+| Activity | Microsoft Team | ContosoHealth Exec | Project Manager | Technical Team | Clinical Champions | Change Mgmt |
 |----------|---------------|-------------------|-----------------|----------------|-------------------|-------------|
 | **Planning Phase** |
 | Requirements Gathering | C | A | R | C | C | I |
@@ -536,7 +536,7 @@ This document outlines the team structure, roles, and responsibilities required 
 - Chris: [TBD hours]
 - Thom: [TBD hours]
 
-**AdventHealth Team:**
+**ContosoHealth Team:**
 - Minimal involvement (requirements validation only)
 
 ### 6.2 Phase 2: MVP (Weeks 3-8)
@@ -546,7 +546,7 @@ This document outlines the team structure, roles, and responsibilities required 
 - Azure Specialist: 10 hours (consulting)
 - Power Platform Architect: 30 hours
 
-**AdventHealth Team:**
+**ContosoHealth Team:**
 - Project Manager: 50% FTE (20 hours/week)
 - Lead Developer: 100% FTE (40 hours/week)
 - Frontend Developer: 100% FTE (40 hours/week)
@@ -560,7 +560,7 @@ This document outlines the team structure, roles, and responsibilities required 
 
 ### 6.3 Phase 3: Beta (Months 3-4)
 
-**AdventHealth Team:**
+**ContosoHealth Team:**
 - Project Manager: 50% FTE
 - Lead Developer: 100% FTE
 - Frontend Developer: 50% FTE
@@ -576,7 +576,7 @@ This document outlines the team structure, roles, and responsibilities required 
 
 ### 6.4 Phase 4: Production (Months 5-6)
 
-**AdventHealth Team:**
+**ContosoHealth Team:**
 - Project Manager: 50% FTE
 - Lead Developer: 50% FTE
 - Power Platform Developer: 25% FTE
@@ -590,7 +590,7 @@ This document outlines the team structure, roles, and responsibilities required 
 
 ### 6.5 Ongoing Operations (Post-Launch)
 
-**AdventHealth Team:**
+**ContosoHealth Team:**
 - Innovation Program Manager: 50% FTE
 - Community Manager: 50% FTE
 - Gamification Coordinator: 25% FTE
@@ -658,7 +658,7 @@ This document outlines the team structure, roles, and responsibilities required 
 - Content: Progress highlights, upcoming milestones, key decisions
 
 **Monthly Newsletter:**
-- Audience: All AdventHealth staff
+- Audience: All ContosoHealth staff
 - Content: Project updates, success stories, upcoming features
 
 **Quarterly Executive Briefing:**
@@ -678,7 +678,7 @@ This document outlines the team structure, roles, and responsibilities required 
 - Successful case study created
 - HIMSS/CHAI presentation delivered
 
-### 9.2 AdventHealth Project Team Success Metrics
+### 9.2 ContosoHealth Project Team Success Metrics
 
 - Project delivered on time and on budget
 - All acceptance criteria met
@@ -793,7 +793,7 @@ This document outlines the team structure, roles, and responsibilities required 
 - Cost structure
 - Support quality
 
-**Contract Owner:** AdventHealth Procurement
+**Contract Owner:** ContosoHealth Procurement
 
 ### 12.2 Potential Future Vendors
 
@@ -821,9 +821,9 @@ This document outlines the team structure, roles, and responsibilities required 
 - Email: [TBD]
 - Role: [TBD]
 
-### AdventHealth Team
+### ContosoHealth Team
 
-*To be populated with AdventHealth team member contact information*
+*To be populated with ContosoHealth team member contact information*
 
 ---
 
@@ -832,4 +832,4 @@ This document outlines the team structure, roles, and responsibilities required 
 - Last Updated: November 3, 2025
 - Next Review: December 1, 2025
 - Owner: Gregory Katz (Microsoft)
-- Approvers: Chris, Thom, AdventHealth Leadership
+- Approvers: Chris, Thom, ContosoHealth Leadership

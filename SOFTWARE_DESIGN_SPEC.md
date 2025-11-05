@@ -1,13 +1,13 @@
-# AdventHealth Innovation Platform - Software Design Specification
+# ContosoHealth Innovation Platform - Software Design Specification
 
 ## Executive Summary
 
-The AdventHealth Innovation Platform is an AI-powered innovation management system designed to capture, analyze, prioritize, and track healthcare innovation ideas across AdventHealth's 55 hospitals. The platform replaces the existing SharePoint-based form with an intelligent system that provides real-time AI analysis, social collaboration features, gamification, and executive dashboards for portfolio management.
+The ContosoHealth Innovation Platform is an AI-powered innovation management system designed to capture, analyze, prioritize, and track healthcare innovation ideas across ContosoHealth's 55 hospitals. The platform replaces the existing SharePoint-based form with an intelligent system that provides real-time AI analysis, social collaboration features, gamification, and executive dashboards for portfolio management.
 
 ## 1. System Overview
 
 ### 1.1 Purpose
-Transform AdventHealth's innovation submission process from a static SharePoint form into an intelligent platform that:
+Transform ContosoHealth's innovation submission process from a static SharePoint form into an intelligent platform that:
 - Captures innovation ideas from 5,000+ healthcare staff
 - Provides AI-powered analysis and recommendations
 - Enables social collaboration and idea refinement
@@ -609,7 +609,7 @@ SORA_API_KEY=<redacted>
 
 **Frontend (.env.production):**
 ```
-VITE_API_URL=https://adventhealth-backend.fly.dev
+VITE_API_URL=https://contosohealth-backend.fly.dev
 ```
 
 ## 12. Performance Requirements
@@ -753,4 +753,4 @@ VITE_API_URL=https://adventhealth-backend.fly.dev
 **Document Version**: 1.0  
 **Last Updated**: November 5, 2025  
 **Author**: Devin AI  
-**Reviewers**: Gregory Katz (Microsoft), AdventHealth Leadership
+**Reviewers**: Gregory Katz (Microsoft), ContosoHealth Leadership

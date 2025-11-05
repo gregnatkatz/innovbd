@@ -1,18 +1,18 @@
-# AdventHealth Innovation Platform - Software Description
+# ContosoHealth Innovation Platform - Software Description
 
 **Version:** 1.0  
 **Date:** November 4, 2025  
-**Prepared for:** AdventHealth Leadership
+**Prepared for:** ContosoHealth Leadership
 
 ---
 
 ## Executive Summary
 
-The AdventHealth Innovation Platform is a comprehensive digital solution designed to capture, analyze, and implement innovative ideas from healthcare staff across all 55 AdventHealth hospitals. The platform transforms the current static SharePoint form submission process into an intelligent, AI-powered innovation management system that drives engagement, collaboration, and measurable business outcomes.
+The ContosoHealth Innovation Platform is a comprehensive digital solution designed to capture, analyze, and implement innovative ideas from healthcare staff across all 55 ContosoHealth hospitals. The platform transforms the current static SharePoint form submission process into an intelligent, AI-powered innovation management system that drives engagement, collaboration, and measurable business outcomes.
 
 **Key Value Proposition:**
 - Transform 700+ annual idea submissions into actionable innovations
-- AI-powered analysis aligns ideas with AdventHealth Vision 2030 strategic priorities
+- AI-powered analysis aligns ideas with ContosoHealth Vision 2030 strategic priorities
 - Gamification and tangible rewards drive 3-5x higher staff engagement
 - Dual-persona architecture protects sensitive financial data while empowering staff
 - Real-time collaboration reduces time-to-implementation by 60%
@@ -22,7 +22,7 @@ The AdventHealth Innovation Platform is a comprehensive digital solution designe
 ## Platform Overview
 
 ### Core Purpose
-Enable every AdventHealth employee to contribute innovative ideas that improve patient care, operational efficiency, and staff satisfaction while providing leadership with data-driven insights for strategic investment decisions.
+Enable every ContosoHealth employee to contribute innovative ideas that improve patient care, operational efficiency, and staff satisfaction while providing leadership with data-driven insights for strategic investment decisions.
 
 ### Target Users
 - **Primary Users (Staff Persona):** 55,000+ clinical and non-clinical staff across 55 hospitals
@@ -52,7 +52,7 @@ Enable every AdventHealth employee to contribute innovative ideas that improve p
 **Problem Solved:** Manual review of 700+ ideas is time-consuming and inconsistent
 
 **Solution:**
-- Automatic strategic alignment scoring against AdventHealth Vision 2030 priorities
+- Automatic strategic alignment scoring against ContosoHealth Vision 2030 priorities
 - Risk assessment across technical, operational, and financial dimensions
 - ROI projection with confidence levels based on similar healthcare implementations
 - Implementation timeline estimation with resource requirements
@@ -575,7 +575,7 @@ Enable every AdventHealth employee to contribute innovative ideas that improve p
 
 ## Conclusion
 
-The AdventHealth Innovation Platform transforms innovation management from a passive form submission process into an active, engaging, and measurable driver of organizational improvement. By combining AI-powered analysis, social collaboration, gamification, and dual-persona security, the platform empowers every staff member to contribute while providing executives with the insights needed to make data-driven investment decisions aligned with Vision 2030 strategic priorities.
+The ContosoHealth Innovation Platform transforms innovation management from a passive form submission process into an active, engaging, and measurable driver of organizational improvement. By combining AI-powered analysis, social collaboration, gamification, and dual-persona security, the platform empowers every staff member to contribute while providing executives with the insights needed to make data-driven investment decisions aligned with Vision 2030 strategic priorities.
 
 **Key Takeaways:**
 1. **Proven Technology:** Built on Azure, React, and FastAPI - enterprise-ready stack
@@ -625,7 +625,7 @@ The AdventHealth Innovation Platform transforms innovation management from a pas
 - **Source Code:** Available upon request
 
 ### E. References
-- AdventHealth Vision 2030 Grand Strategy: https://www.healthleadersmedia.com/strategy/adventhealth-ceo-unveils-grand-strategy-2025
+- ContosoHealth Vision 2030 Grand Strategy: https://www.healthleadersmedia.com/strategy/contosohealth-ceo-unveils-grand-strategy-2025
 - Coalition for Health AI (CHAI): https://www.coalitionforhealthai.org
 - Azure OpenAI Service: https://azure.microsoft.com/en-us/products/ai-services/openai-service
 
@@ -634,4 +634,4 @@ The AdventHealth Innovation Platform transforms innovation management from a pas
 **Document Version:** 1.0  
 **Last Updated:** November 4, 2025  
 **Prepared by:** Gregory Katz, Microsoft Healthcare Solutions  
-**For:** AdventHealth Innovation Leadership Team
+**For:** ContosoHealth Innovation Leadership Team

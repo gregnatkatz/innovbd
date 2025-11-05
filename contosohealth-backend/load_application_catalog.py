@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Load AdventHealth Application Catalog into SQLite database
+Load ContosoHealth Application Catalog into SQLite database
 This provides the system knowledge for AI agents to understand integrations,
 costs, timelines, and opportunities.
 """
@@ -281,7 +281,7 @@ def load_application_data(conn, catalog_data):
     print(f"✓ Loaded {len(applications)} applications")
 
 def main():
-    json_path = '/home/ubuntu/attachments/ced457a7-cfcd-49e9-a9fc-c3f62d4596fc/adventhealth_application_catalog.json'
+    json_path = '/home/ubuntu/attachments/ced457a7-cfcd-49e9-a9fc-c3f62d4596fc/contosohealth_application_catalog.json'
     
     try:
         with open(json_path, 'r') as f:
@@ -290,7 +290,7 @@ def main():
         print(f"Error: Could not find {json_path}")
         sys.exit(1)
     
-    db_path = 'adventhealth_ideas.db'
+    db_path = 'contosohealth_ideas.db'
     conn = sqlite3.connect(db_path)
     
     try:

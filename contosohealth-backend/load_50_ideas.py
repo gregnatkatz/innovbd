@@ -4,7 +4,7 @@ import json
 from datetime import datetime, timedelta
 import random
 
-DB_PATH = "adventhealth_ideas.db"
+DB_PATH = "contosohealth_ideas.db"
 
 HIGH_ENGAGEMENT_COMMENTS = [
     {"author": "Dr. Emily Foster", "dept": "Emergency Department", "content": "This is exactly what we need! I've been saying this for years."},
@@ -123,7 +123,7 @@ async def generate_ai_analysis(idea, quality):
 async def load_ideas():
     """Load all 50 diverse healthcare ideas into the database"""
     
-    with open("/home/ubuntu/adventhealth-innovation-platform/50-diverse-healthcare-ideas.json", "r") as f:
+    with open("/home/ubuntu/contosohealth-innovation-platform/50-diverse-healthcare-ideas.json", "r") as f:
         ideas = json.load(f)
     
     async with aiosqlite.connect(DB_PATH) as db:
@@ -171,8 +171,8 @@ async def load_ideas():
                 idea.get("successMetrics", ""),
                 idea.get("submitterName", "Anonymous"),
                 idea.get("submitterDepartment", "General"),
-                "AdventHealth Orlando",
-                f"{idea.get('submitterName', 'user').lower().replace(' ', '.')}@adventhealth.com",
+                "ContosoHealth Orlando",
+                f"{idea.get('submitterName', 'user').lower().replace(' ', '.')}@contosohealth.com",
                 idea.get("categoryType", "Process Improvement"),
                 idea.get("functionalArea", "Enterprise-wide"),
                 "New",

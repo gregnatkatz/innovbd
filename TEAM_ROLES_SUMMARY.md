@@ -1,26 +1,26 @@
-# AdventHealth Innovation Platform - Team Roles Summary
+# ContosoHealth Innovation Platform - Team Roles Summary
 
 ## Executive Summary
 
-This document outlines the team structure, roles, and responsibilities required to successfully design, build, deploy, and maintain the AdventHealth Innovation Platform. The project requires a cross-functional team with expertise in healthcare IT, AI/ML, full-stack development, UX design, and change management.
+This document outlines the team structure, roles, and responsibilities required to successfully design, build, deploy, and maintain the ContosoHealth Innovation Platform. The project requires a cross-functional team with expertise in healthcare IT, AI/ML, full-stack development, UX design, and change management.
 
 ## Project Organization
 
 ### Project Governance
 
-**Executive Sponsor**: AdventHealth CIO/CTO
+**Executive Sponsor**: ContosoHealth CIO/CTO
 - Final decision authority on scope and budget
 - Removes organizational blockers
 - Champions platform adoption across 55 hospitals
 - Quarterly steering committee reviews
 
-**Product Owner**: AdventHealth Innovation Director
+**Product Owner**: ContosoHealth Innovation Director
 - Defines product vision and roadmap
 - Prioritizes features and backlog
 - Accepts completed work
 - Primary liaison with end users
 
-**Project Manager**: Microsoft or AdventHealth PM
+**Project Manager**: Microsoft or ContosoHealth PM
 - Day-to-day project coordination
 - Risk management and mitigation
 - Status reporting and stakeholder communication
@@ -251,7 +251,7 @@ This document outlines the team structure, roles, and responsibilities required 
 - 5+ years healthcare operations experience
 - Clinical or administrative background
 - Innovation management experience
-- AdventHealth systems knowledge
+- ContosoHealth systems knowledge
 - Change management experience
 
 **Time Commitment**: 25% (10 hours/week)
@@ -675,7 +675,7 @@ This document outlines the team structure, roles, and responsibilities required 
 
 **Full Job Description:**
 
-We are seeking an experienced Technical Lead to architect and guide the development of AdventHealth's Innovation Platform. This role will define the technical vision, make key architecture decisions, and ensure the platform is scalable, secure, and maintainable.
+We are seeking an experienced Technical Lead to architect and guide the development of ContosoHealth's Innovation Platform. This role will define the technical vision, make key architecture decisions, and ensure the platform is scalable, secure, and maintainable.
 
 **Responsibilities:**
 - Design overall system architecture using Azure cloud services
@@ -708,7 +708,7 @@ We are seeking an experienced Technical Lead to architect and guide the developm
 
 **Full Job Description:**
 
-We are seeking an AI/ML Engineer to design and implement AI-powered agents for the AdventHealth Innovation Platform. This role will integrate Azure OpenAI services, optimize prompts, and ensure high-quality AI-generated insights.
+We are seeking an AI/ML Engineer to design and implement AI-powered agents for the ContosoHealth Innovation Platform. This role will integrate Azure OpenAI services, optimize prompts, and ensure high-quality AI-generated insights.
 
 **Responsibilities:**
 - Design and implement 5 AI agents (system detection, solution discovery, architecture generation, feasibility scoring, video prompt generation)
@@ -739,4 +739,4 @@ We are seeking an AI/ML Engineer to design and implement AI-powered agents for t
 **Document Version**: 1.0  
 **Last Updated**: November 5, 2025  
 **Author**: Devin AI  
-**Reviewers**: Gregory Katz (Microsoft), AdventHealth Leadership
+**Reviewers**: Gregory Katz (Microsoft), ContosoHealth Leadership

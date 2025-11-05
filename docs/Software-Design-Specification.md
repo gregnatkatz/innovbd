@@ -1,16 +1,16 @@
-# AdventHealth Innovation Platform - Software Design Specification
+# ContosoHealth Innovation Platform - Software Design Specification
 
 **Version:** 1.0  
 **Date:** November 3, 2025  
 **Project:** AI-Powered Healthcare Innovation Management Platform  
-**Client:** AdventHealth (55 hospitals, $19.8B revenue)  
+**Client:** ContosoHealth (55 hospitals, $19.8B revenue)  
 **Microsoft Team:** Chris, Thom, Greg
 
 ---
 
 ## Executive Summary
 
-The AdventHealth Innovation Platform transforms the current static SharePoint form submission process into an intelligent, AI-powered innovation management system. The platform leverages Azure OpenAI to analyze ideas, predict ROI, assess risk, and recommend resources while providing dual-view experiences for staff contributors and executive leadership. Social features and gamification drive engagement, while real-time analytics enable data-driven portfolio management.
+The ContosoHealth Innovation Platform transforms the current static SharePoint form submission process into an intelligent, AI-powered innovation management system. The platform leverages Azure OpenAI to analyze ideas, predict ROI, assess risk, and recommend resources while providing dual-view experiences for staff contributors and executive leadership. Social features and gamification drive engagement, while real-time analytics enable data-driven portfolio management.
 
 **Key Differentiators:**
 - AI-powered idea analysis and categorization using Azure OpenAI
@@ -172,7 +172,7 @@ The AdventHealth Innovation Platform transforms the current static SharePoint fo
 ```python
 # Prompt Engineering for Healthcare Context
 system_prompt = """
-You are an innovation analysis expert for AdventHealth, 
+You are an innovation analysis expert for ContosoHealth, 
 a 55-hospital healthcare system with $19.8B revenue.
 
 Analyze submitted ideas and provide:
@@ -192,7 +192,7 @@ Strategic Priorities:
 - Staff retention
 
 Base analysis on healthcare industry benchmarks and 
-AdventHealth's current initiatives.
+ContosoHealth's current initiatives.
 """
 ```
 
@@ -820,7 +820,7 @@ interface Testimonial {
 
 **Data Residency:**
 - All data stored in Azure US regions
-- Compliance with AdventHealth data governance
+- Compliance with ContosoHealth data governance
 - Regular security audits
 
 **Authentication:**
@@ -913,7 +913,7 @@ AZURE_OPENAI_API_VERSION = "2025-01-01-preview"
 **Idea Analysis Prompt:**
 ```python
 ANALYSIS_SYSTEM_PROMPT = """
-You are an innovation analysis expert for AdventHealth, 
+You are an innovation analysis expert for ContosoHealth, 
 a 55-hospital healthcare system with $19.8B annual revenue.
 
 Context:
@@ -961,7 +961,7 @@ Analyze the submitted healthcare innovation idea and provide:
 Base your analysis on:
 - Healthcare industry benchmarks
 - Similar project outcomes
-- AdventHealth's current state
+- ContosoHealth's current state
 - Realistic resource constraints
 
 Be specific, constructive, and realistic. Flag gaps in the idea.
@@ -1378,4 +1378,4 @@ COPILOT_FUNCTIONS = [
 - Last Updated: November 3, 2025
 - Next Review: December 1, 2025
 - Owner: Gregory Katz (Microsoft)
-- Approvers: Chris, Thom, AdventHealth Leadership
+- Approvers: Chris, Thom, ContosoHealth Leadership
