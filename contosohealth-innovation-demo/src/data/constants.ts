@@ -36,6 +36,7 @@ export const successStories = [
     submittedDate: '2024-06-20',
     implementedDate: '2025-08-15',
     image: '♿',
+    videoUrl: '/sora-idea-018.mp4',
     journey: {
       submission: 'Mike Johnson submitted a spark idea: "Faster way to find wheelchairs - we waste so much time looking for them. Can we put trackers on them?" Just two sentences, but it captured a real pain point.',
       growth: 'The idea received 23 upvotes and 8 comments. Transport staff from other hospitals chimed in with similar frustrations. Amanda Foster from Pediatrics noted they also lose IV poles and patient lifts. The scope expanded to track all mobile equipment.',
@@ -64,6 +65,7 @@ export const successStories = [
     submittedDate: '2024-05-10',
     implementedDate: '2025-07-01',
     image: '💊',
+    videoUrl: '/sora-idea-047.mp4',
     journey: {
       submission: 'Dr. Lee submitted: "Discharge prescriptions get lost - we send them to pharmacy but patients say they never got them. Communication breakdown." He described how 30% of prescriptions had issues, leading to readmissions.',
       growth: 'The idea gained 39 upvotes and 15 comments. Pharmacists, case managers, and nurses all contributed. Dr. Susan Miller suggested checking insurance formulary before prescribing. Jennifer Adams from IT proposed text notifications. The community built a comprehensive solution.',
