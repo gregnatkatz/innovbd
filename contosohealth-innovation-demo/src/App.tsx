@@ -52,7 +52,7 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [filterCategory, setFilterCategory] = useState<string>('all')
-  const [filterDepartment, setFilterDepartment] = useState<string>('Nursing')
+  const [filterDepartment, setFilterDepartment] = useState<string>('all')
   const [ideas, setIdeas] = useState<Idea[]>([])
   const [selectedIdea, setSelectedIdea] = useState<Idea | null>(null)
   const [copilotOpen, setCopilotOpen] = useState(false)
@@ -382,6 +382,15 @@ function App() {
             </div>
           </div>
         </ScrollArea>
+
+        {/* BrakeKat Studios Logo */}
+        <div className="p-4 border-t border-slate-800">
+          <img 
+            src="/brakekat-logo-white.png" 
+            alt="BrakeKat Studios" 
+            className="w-full h-auto"
+          />
+        </div>
       </div>
 
       {/* Main Content */}
@@ -612,14 +621,6 @@ function App() {
         apiUrl={API_URL}
       />
 
-      {/* BrakeKat Studios Logo */}
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
-        <img 
-          src="/brakekat-logo-transparent.png" 
-          alt="BrakeKat Studios" 
-          className="w-72 h-auto opacity-70 hover:opacity-100 transition-opacity"
-        />
-      </div>
     </div>
   )
 }
