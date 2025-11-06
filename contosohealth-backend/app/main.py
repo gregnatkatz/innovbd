@@ -1575,7 +1575,17 @@ async def get_agent_analysis(idea_id: str):
                     "updated_at": row[8]
                 }
             else:
-                raise HTTPException(status_code=404, detail="Analysis not found")
+                return {
+                    "idea_id": idea_id,
+                    "agent1": None,
+                    "agent2": None,
+                    "agent3": None,
+                    "agent4": None,
+                    "sora": None,
+                    "completed_count": 0,
+                    "created_at": None,
+                    "updated_at": None
+                }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

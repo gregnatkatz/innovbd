@@ -1,4 +1,4 @@
-import { Lightbulb, TrendingUp, Eye } from 'lucide-react'
+import { Lightbulb, TrendingUp, Eye, Play } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -33,6 +33,25 @@ export function SuccessStoriesView({ persona, onViewOriginalIdea }: SuccessStori
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
+              {/* AI-Generated Demo Video */}
+              {story.videoUrl && (
+                <div>
+                  <h5 className="text-xs font-semibold mb-2 flex items-center gap-2">
+                    <Play className="w-3 h-3 text-blue-500" />
+                    AI-Generated Demo Video
+                  </h5>
+                  <div className="relative rounded-lg overflow-hidden bg-slate-950 border border-slate-700 mb-3">
+                    <video 
+                      controls 
+                      className="w-full h-auto"
+                    >
+                      <source src={story.videoUrl} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                </div>
+              )}
+
               {/* Problem Statement */}
               <div>
                 <h4 className="text-xs font-semibold text-blue-400 mb-1">Problem Statement</h4>

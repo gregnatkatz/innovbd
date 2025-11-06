@@ -7,6 +7,7 @@ export const successStories = [
     submittedDate: '2024-03-15',
     implementedDate: '2025-09-01',
     image: '💊',
+    videoUrl: '/sora-icu-monitoring.mp4',
     journey: {
       submission: 'Sarah Chen, a Medical/Surgical nurse, submitted a simple idea: "Help me not miss giving patients their meds on time." She described how getting pulled away for emergencies caused medication delays, affecting patient safety.',
       growth: 'The idea gained 47 upvotes and sparked 12 comments from nurses across 5 units. Dr. Emily Foster from Pharmacy suggested integrating with Epic MAR. Michael Chen from IT confirmed existing infrastructure could support it. The community refined it into a comprehensive solution.',
