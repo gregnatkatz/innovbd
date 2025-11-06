@@ -611,6 +611,15 @@ function App() {
         ideaId={submittedIdeaId}
         apiUrl={API_URL}
       />
+
+      {/* BrakeKat Studios Logo */}
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50">
+        <img 
+          src="/brakekat-logo-transparent.png" 
+          alt="BrakeKat Studios" 
+          className="w-72 h-auto opacity-70 hover:opacity-100 transition-opacity"
+        />
+      </div>
     </div>
   )
 }

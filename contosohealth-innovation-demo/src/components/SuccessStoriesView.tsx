@@ -20,53 +20,38 @@ export function SuccessStoriesView({ persona, onViewOriginalIdea }: SuccessStori
         </p>
       </div>
 
-      <div className="space-y-8">
-        {successStories.map(story => (
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {successStories.slice(0, 3).map(story => (
           <Card key={story.id} className="bg-slate-900 border-slate-800">
-            <CardHeader>
-              <div className="flex items-start gap-4">
-                <div className="text-6xl">{story.image}</div>
-                <div className="flex-1">
-                  <CardTitle className="text-2xl mb-2">{story.title}</CardTitle>
-                  <CardDescription className="text-base">
-                    Submitted by {story.submitter} • {new Date(story.submittedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} → Implemented {new Date(story.implementedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
-                  </CardDescription>
-                </div>
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="text-3xl">{story.image}</div>
+                <CardTitle className="text-lg">{story.title}</CardTitle>
               </div>
+              <CardDescription className="text-xs">
+                {story.submitter} • {new Date(story.submittedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })} → {new Date(story.implementedDate).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {/* Journey Timeline */}
-                <div className="space-y-4">
-                  <h3 className="font-semibold text-lg flex items-center gap-2">
-                    <Lightbulb className="w-5 h-5 text-yellow-500" />
-                    The Journey
-                  </h3>
-                  
-                  <div className="space-y-4 pl-4 border-l-2 border-blue-500/30">
-                    <div>
-                      <div className="text-sm font-semibold text-blue-400 mb-1">1. How It Started</div>
-                      <p className="text-slate-300 text-sm">{story.journey.submission}</p>
-                    </div>
-                    
-                    <div>
-                      <div className="text-sm font-semibold text-green-400 mb-1">2. How It Grew</div>
-                      <p className="text-slate-300 text-sm">{story.journey.growth}</p>
-                    </div>
-                    
-                    <div>
-                      <div className="text-sm font-semibold text-purple-400 mb-1">3. ContosoHealth Took Action</div>
-                      <p className="text-slate-300 text-sm">{story.journey.action}</p>
-                    </div>
-                    
-                    <div>
-                      <div className="text-sm font-semibold text-slate-400 mb-1">Timeline</div>
-                      <p className="text-slate-400 text-sm italic">{story.journey.timeline}</p>
-                    </div>
-                  </div>
-                </div>
+            <CardContent className="space-y-3">
+              {/* Problem Statement */}
+              <div>
+                <h4 className="text-xs font-semibold text-blue-400 mb-1">Problem Statement</h4>
+                <p className="text-xs text-slate-300 line-clamp-3">{story.journey.submission}</p>
+              </div>
 
-                <Separator className="bg-slate-800" />
+              {/* Proposed Solution */}
+              <div>
+                <h4 className="text-xs font-semibold text-green-400 mb-1">Proposed Solution</h4>
+                <p className="text-xs text-slate-300 line-clamp-3">{story.journey.action}</p>
+              </div>
+
+              {/* Expected Benefit */}
+              <div>
+                <h4 className="text-xs font-semibold text-purple-400 mb-1">Expected Benefit</h4>
+                <p className="text-xs text-slate-300 line-clamp-2">{story.journey.growth}</p>
+              </div>
+
+              <Separator className="bg-slate-800 my-2" />
 
                 {/* Impact Section - Persona-based */}
                 <div className="space-y-4">
@@ -137,7 +122,6 @@ export function SuccessStoriesView({ persona, onViewOriginalIdea }: SuccessStori
                   <Eye className="w-4 h-4 mr-2" />
                   View Original Idea Submission
                 </Button>
-              </div>
             </CardContent>
           </Card>
         ))}
