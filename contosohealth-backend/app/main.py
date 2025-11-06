@@ -472,6 +472,203 @@ async def seed_existing_projects(db):
     await db.commit()
     print(f"Seeded {len(projects)} existing projects into database")
 
+async def seed_applications(db):
+    """Seed database with healthcare applications/systems"""
+    import uuid
+    
+    applications = [
+        {
+            "id": "epic",
+            "name": "Epic EHR",
+            "description": "Electronic Health Record system",
+            "vendor": "Epic Systems",
+            "typical_cost": 50000,
+            "typical_timeline_weeks": 12,
+            "sme_name": "Sarah Chen",
+            "sme_email": "sarah.chen@contosohealth.com"
+        },
+        {
+            "id": "pyxis",
+            "name": "Pyxis MedStation",
+            "description": "Automated medication dispensing system",
+            "vendor": "BD",
+            "typical_cost": 25000,
+            "typical_timeline_weeks": 8,
+            "sme_name": "Michael Chen",
+            "sme_email": "michael.chen@contosohealth.com"
+        },
+        {
+            "id": "rtls",
+            "name": "Bluetooth RTLS",
+            "description": "Real-time location tracking system",
+            "vendor": "Various",
+            "typical_cost": 30000,
+            "typical_timeline_weeks": 10,
+            "sme_name": "Jennifer Walsh",
+            "sme_email": "jennifer.walsh@contosohealth.com"
+        },
+        {
+            "id": "azure",
+            "name": "Microsoft Azure",
+            "description": "Cloud platform and AI services",
+            "vendor": "Microsoft",
+            "typical_cost": 20000,
+            "typical_timeline_weeks": 6,
+            "sme_name": "Robert Kim",
+            "sme_email": "robert.kim@contosohealth.com"
+        },
+        {
+            "id": "workday",
+            "name": "Workday",
+            "description": "HR and scheduling system",
+            "vendor": "Workday",
+            "typical_cost": 40000,
+            "typical_timeline_weeks": 16,
+            "sme_name": "Amanda Foster",
+            "sme_email": "amanda.foster@contosohealth.com"
+        },
+        {
+            "id": "servicenow",
+            "name": "ServiceNow",
+            "description": "IT service management platform",
+            "vendor": "ServiceNow",
+            "typical_cost": 35000,
+            "typical_timeline_weeks": 12,
+            "sme_name": "Lisa Rodriguez",
+            "sme_email": "lisa.rodriguez@contosohealth.com"
+        },
+        {
+            "id": "power-platform",
+            "name": "Power Platform",
+            "description": "Low-code development platform",
+            "vendor": "Microsoft",
+            "typical_cost": 15000,
+            "typical_timeline_weeks": 4,
+            "sme_name": "Emily Foster",
+            "sme_email": "emily.foster@contosohealth.com"
+        }
+    ]
+    
+    for app in applications:
+        await db.execute("""
+            INSERT INTO applications (id, name, description, vendor, typical_cost, typical_timeline_weeks, sme_name, sme_email)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (app["id"], app["name"], app["description"], app["vendor"], app["typical_cost"], 
+              app["typical_timeline_weeks"], app["sme_name"], app["sme_email"]))
+    
+    await db.commit()
+
+async def seed_pain_points(db):
+    """Seed database with common healthcare pain points and solutions"""
+    import uuid
+    
+    pain_points = [
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "medication administration delays and tracking",
+            "app_id": "epic",
+            "ideas_submitted": 47,
+            "potential_value": "$350K/year",
+            "solutions": json.dumps(["MedSync pilot at Orlando", "Rover barcode enhancements", "Real-time medication tracking"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "equipment tracking for wheelchairs and mobile assets",
+            "app_id": "rtls",
+            "ideas_submitted": 23,
+            "potential_value": "$180K/year",
+            "solutions": json.dumps(["RTLS tags pilot at Tampa", "Asset map dashboard", "Bluetooth tracking system"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "discharge prescriptions lost or missed",
+            "app_id": "epic",
+            "ideas_submitted": 39,
+            "potential_value": "$250K/year",
+            "solutions": json.dumps(["Automated discharge prescription workflow", "Pharmacy integration", "Text notifications"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "ED lab turnaround time too long",
+            "app_id": "epic",
+            "ideas_submitted": 52,
+            "potential_value": "$400K/year",
+            "solutions": json.dumps(["Point-of-care testing expansion", "Rapid lab protocols", "Lab workflow optimization"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "sepsis alert fatigue and false positives",
+            "app_id": "epic",
+            "ideas_submitted": 45,
+            "potential_value": "$500K/year",
+            "solutions": json.dumps(["ML-based sepsis prediction", "Alert triage system", "Clinical context integration"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "wound photo documentation inconsistency",
+            "app_id": "azure",
+            "ideas_submitted": 29,
+            "potential_value": "$120K/year",
+            "solutions": json.dumps(["Standardized photo app", "AI wound measurement", "Epic integration"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "scheduling system confusion and inefficiency",
+            "app_id": "workday",
+            "ideas_submitted": 72,
+            "potential_value": "$300K/year",
+            "solutions": json.dumps(["Mobile scheduling app", "Self-service shift swaps", "AI-optimized schedules"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "interpreter availability and wait times",
+            "app_id": "power-platform",
+            "ideas_submitted": 38,
+            "potential_value": "$90K/year",
+            "solutions": json.dumps(["On-call interpreter pool", "AI translation assist", "Video interpretation expansion"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "bed status visibility and patient flow",
+            "app_id": "servicenow",
+            "ideas_submitted": 30,
+            "potential_value": "$1.2M/year",
+            "solutions": json.dumps(["Real-time bed dashboard", "Housekeeping integration", "Transport workflow"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "patient belongings tracking and loss prevention",
+            "app_id": "epic",
+            "ideas_submitted": 41,
+            "potential_value": "$75K/year",
+            "solutions": json.dumps(["Barcode tracking system", "Photo documentation", "Transfer alerts"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "fall prevention and patient safety monitoring",
+            "app_id": "azure",
+            "ideas_submitted": 61,
+            "potential_value": "$450K/year",
+            "solutions": json.dumps(["AI fall risk assessment", "Smart bed sensors", "Video monitoring"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "new nurse orientation and retention",
+            "app_id": "power-platform",
+            "ideas_submitted": 44,
+            "potential_value": "$200K/year",
+            "solutions": json.dumps(["Extended orientation program", "Mentor matching system", "Simulation training"])
+        }
+    ]
+    
+    for pp in pain_points:
+        await db.execute("""
+            INSERT INTO pain_points (id, pain_point, app_id, ideas_submitted, potential_value, solutions)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (pp["id"], pp["pain_point"], pp["app_id"], pp["ideas_submitted"], pp["potential_value"], pp["solutions"]))
+    
+    await db.commit()
+
 async def init_db():
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute("""
@@ -557,6 +754,31 @@ async def init_db():
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
             )
         """)
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS applications (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                description TEXT,
+                vendor TEXT,
+                typical_cost INTEGER,
+                typical_timeline_weeks INTEGER,
+                sme_name TEXT,
+                sme_email TEXT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS pain_points (
+                id TEXT PRIMARY KEY,
+                pain_point TEXT NOT NULL,
+                app_id TEXT NOT NULL,
+                ideas_submitted INTEGER DEFAULT 0,
+                potential_value TEXT,
+                solutions TEXT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (app_id) REFERENCES applications(id)
+            )
+        """)
         await db.commit()
         
         async with db.execute("SELECT COUNT(*) FROM projects") as cursor:
@@ -568,6 +790,16 @@ async def init_db():
             row = await cursor.fetchone()
             if row[0] == 0:
                 await seed_existing_solutions(db)
+        
+        async with db.execute("SELECT COUNT(*) FROM applications") as cursor:
+            row = await cursor.fetchone()
+            if row[0] == 0:
+                await seed_applications(db)
+        
+        async with db.execute("SELECT COUNT(*) FROM pain_points") as cursor:
+            row = await cursor.fetchone()
+            if row[0] == 0:
+                await seed_pain_points(db)
 
 async def detect_systems(text: str) -> List[Dict[str, Any]]:
     """Agent 1: System Context Analyzer - Use GPT-4o to detect healthcare systems and technologies"""
@@ -1756,5 +1988,328 @@ OUTPUT FORMAT (JSON):
             
     except HTTPException:
         raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/executive/risk-assessment")
+async def get_risk_assessment():
+    """Get comprehensive risk assessment for all ideas"""
+    try:
+        async with aiosqlite.connect(DB_PATH) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute("SELECT * FROM ideas") as cursor:
+                rows = await cursor.fetchall()
+                ideas = []
+                for row in rows:
+                    idea_dict = dict(row)
+                    if idea_dict.get('aiAnalysis'):
+                        idea_dict['aiAnalysis'] = json.loads(idea_dict['aiAnalysis'])
+                    ideas.append(idea_dict)
+        
+        risk_data = []
+        for idea in ideas:
+            strategic_risk = 10 - (idea.get('aiAnalysis', {}).get('strategicAlignmentScore', 3))
+            
+            systems_count = len(idea.get('aiAnalysis', {}).get('systemsDetected', []))
+            technical_risk = min(10, 3 + systems_count)
+            
+            impact_staff = idea.get('aiAnalysis', {}).get('impactStaff', 'Low')
+            operational_risk = {'Low': 3, 'Medium': 6, 'High': 9}.get(impact_staff, 5)
+            
+            roi = idea.get('aiAnalysis', {}).get('executiveAnalysis', {}).get('netValue3Year', 0)
+            financial_risk = 8 if roi < 50000 else (5 if roi < 200000 else 3)
+            
+            overall_risk = (strategic_risk * 0.3 + technical_risk * 0.25 + 
+                          operational_risk * 0.25 + financial_risk * 0.2)
+            
+            risk_level = 'Low' if overall_risk < 4 else ('Medium' if overall_risk < 7 else 'High')
+            
+            risk_data.append({
+                'id': idea['id'],
+                'title': idea['title'],
+                'category': idea.get('categoryType', 'Unknown'),
+                'strategicRisk': round(strategic_risk, 1),
+                'technicalRisk': round(technical_risk, 1),
+                'operationalRisk': round(operational_risk, 1),
+                'financialRisk': round(financial_risk, 1),
+                'overallRisk': round(overall_risk, 1),
+                'riskLevel': risk_level,
+                'mitigation': f"Monitor {risk_level.lower()} risk areas closely"
+            })
+        
+        high_risk = [r for r in risk_data if r['riskLevel'] == 'High']
+        medium_risk = [r for r in risk_data if r['riskLevel'] == 'Medium']
+        low_risk = [r for r in risk_data if r['riskLevel'] == 'Low']
+        
+        return {
+            'ideas': risk_data,
+            'summary': {
+                'highRisk': len(high_risk),
+                'mediumRisk': len(medium_risk),
+                'lowRisk': len(low_risk),
+                'avgOverallRisk': round(sum(r['overallRisk'] for r in risk_data) / len(risk_data), 1) if risk_data else 0
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/executive/sentiment-analysis")
+async def get_sentiment_analysis():
+    """Get sentiment and excitement analysis by department and category"""
+    try:
+        async with aiosqlite.connect(DB_PATH) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute("SELECT * FROM ideas") as cursor:
+                rows = await cursor.fetchall()
+                ideas = []
+                for row in rows:
+                    idea_dict = dict(row)
+                    if idea_dict.get('aiAnalysis'):
+                        idea_dict['aiAnalysis'] = json.loads(idea_dict['aiAnalysis'])
+                    ideas.append(idea_dict)
+        
+        dept_sentiment = {}
+        for idea in ideas:
+            dept = idea.get('submitterDepartment', 'Unknown')
+            if dept not in dept_sentiment:
+                dept_sentiment[dept] = {
+                    'department': dept,
+                    'ideaCount': 0,
+                    'totalEngagement': 0,
+                    'avgEngagement': 0,
+                    'excitement': 0,
+                    'sentiment': 'Neutral'
+                }
+            
+            engagement = (idea.get('upvotes', 0) + idea.get('commentCount', 0) * 2)
+            dept_sentiment[dept]['ideaCount'] += 1
+            dept_sentiment[dept]['totalEngagement'] += engagement
+        
+        for dept_data in dept_sentiment.values():
+            if dept_data['ideaCount'] > 0:
+                dept_data['avgEngagement'] = round(dept_data['totalEngagement'] / dept_data['ideaCount'], 1)
+                dept_data['excitement'] = min(100, round((dept_data['avgEngagement'] * 2 + dept_data['ideaCount'] * 5)))
+                if dept_data['excitement'] > 70:
+                    dept_data['sentiment'] = 'Very Positive'
+                elif dept_data['excitement'] > 50:
+                    dept_data['sentiment'] = 'Positive'
+                elif dept_data['excitement'] > 30:
+                    dept_data['sentiment'] = 'Neutral'
+                else:
+                    dept_data['sentiment'] = 'Needs Attention'
+        
+        category_sentiment = {}
+        for idea in ideas:
+            cat = idea.get('categoryType', 'Unknown')
+            if cat not in category_sentiment:
+                category_sentiment[cat] = {
+                    'category': cat,
+                    'ideaCount': 0,
+                    'totalEngagement': 0,
+                    'avgEngagement': 0,
+                    'excitement': 0,
+                    'sentiment': 'Neutral'
+                }
+            
+            engagement = (idea.get('upvotes', 0) + idea.get('commentCount', 0) * 2)
+            category_sentiment[cat]['ideaCount'] += 1
+            category_sentiment[cat]['totalEngagement'] += engagement
+        
+        for cat_data in category_sentiment.values():
+            if cat_data['ideaCount'] > 0:
+                cat_data['avgEngagement'] = round(cat_data['totalEngagement'] / cat_data['ideaCount'], 1)
+                cat_data['excitement'] = min(100, round((cat_data['avgEngagement'] * 2 + cat_data['ideaCount'] * 5)))
+                if cat_data['excitement'] > 70:
+                    cat_data['sentiment'] = 'Very Positive'
+                elif cat_data['excitement'] > 50:
+                    cat_data['sentiment'] = 'Positive'
+                elif cat_data['excitement'] > 30:
+                    cat_data['sentiment'] = 'Neutral'
+                else:
+                    cat_data['sentiment'] = 'Needs Attention'
+        
+        return {
+            'byDepartment': sorted(list(dept_sentiment.values()), key=lambda x: x['excitement'], reverse=True),
+            'byCategory': sorted(list(category_sentiment.values()), key=lambda x: x['excitement'], reverse=True),
+            'overall': {
+                'avgExcitement': round(sum(d['excitement'] for d in dept_sentiment.values()) / len(dept_sentiment), 1) if dept_sentiment else 0,
+                'topDepartment': max(dept_sentiment.values(), key=lambda x: x['excitement'])['department'] if dept_sentiment else 'N/A',
+                'topCategory': max(category_sentiment.values(), key=lambda x: x['excitement'])['category'] if category_sentiment else 'N/A'
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/executive/maturity-pipeline")
+async def get_maturity_pipeline():
+    """Get maturity pipeline showing realized vs needs development"""
+    try:
+        async with aiosqlite.connect(DB_PATH) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute("SELECT * FROM ideas") as cursor:
+                rows = await cursor.fetchall()
+                ideas = []
+                for row in rows:
+                    idea_dict = dict(row)
+                    if idea_dict.get('aiAnalysis'):
+                        idea_dict['aiAnalysis'] = json.loads(idea_dict['aiAnalysis'])
+                    ideas.append(idea_dict)
+        
+        pipeline = {
+            'realized': [],  # Approved/Implemented
+            'piloting': [],  # In pilot/testing
+            'developing': [],  # In development
+            'planning': [],  # Approved, planning phase
+            'evaluating': [],  # In review, high feasibility
+            'refining': []  # Submitted, needs refinement
+        }
+        
+        for idea in ideas:
+            status = idea.get('status', 'Submitted')
+            feasibility = idea.get('aiAnalysis', {}).get('overallScore', 5)
+            engagement = idea.get('upvotes', 0) + idea.get('commentCount', 0)
+            
+            idea_summary = {
+                'id': idea['id'],
+                'title': idea['title'],
+                'category': idea.get('categoryType', 'Unknown'),
+                'status': status,
+                'feasibility': feasibility,
+                'engagement': engagement,
+                'roi': idea.get('aiAnalysis', {}).get('executiveAnalysis', {}).get('netValue3Year', 0)
+            }
+            
+            if status == 'Approved' and feasibility >= 8:
+                pipeline['realized'].append(idea_summary)
+            elif status == 'Approved' and feasibility >= 6:
+                pipeline['piloting'].append(idea_summary)
+            elif status == 'In Review' and feasibility >= 7:
+                pipeline['developing'].append(idea_summary)
+            elif status == 'In Review' and feasibility >= 5:
+                pipeline['planning'].append(idea_summary)
+            elif engagement > 20 or feasibility >= 6:
+                pipeline['evaluating'].append(idea_summary)
+            else:
+                pipeline['refining'].append(idea_summary)
+        
+        return {
+            'pipeline': pipeline,
+            'summary': {
+                'realized': len(pipeline['realized']),
+                'piloting': len(pipeline['piloting']),
+                'developing': len(pipeline['developing']),
+                'planning': len(pipeline['planning']),
+                'evaluating': len(pipeline['evaluating']),
+                'refining': len(pipeline['refining']),
+                'totalValue': sum(i['roi'] for stage in pipeline.values() for i in stage)
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/executive/action-items")
+async def get_executive_action_items():
+    """Get prioritized executive action items"""
+    try:
+        async with aiosqlite.connect(DB_PATH) as db:
+            db.row_factory = aiosqlite.Row
+            async with db.execute("SELECT * FROM ideas") as cursor:
+                rows = await cursor.fetchall()
+                ideas = []
+                for row in rows:
+                    idea_dict = dict(row)
+                    if idea_dict.get('aiAnalysis'):
+                        idea_dict['aiAnalysis'] = json.loads(idea_dict['aiAnalysis'])
+                    ideas.append(idea_dict)
+        
+        action_items = []
+        
+        high_priority = [i for i in ideas if 
+                        i.get('aiAnalysis', {}).get('executiveAnalysis', {}).get('netValue3Year', 0) > 200000 and
+                        (i.get('upvotes', 0) + i.get('commentCount', 0)) > 20 and
+                        i.get('status') != 'Approved']
+        
+        if high_priority:
+            action_items.append({
+                'priority': 'Critical',
+                'action': 'Review High-Value Ideas for Approval',
+                'description': f'{len(high_priority)} ideas with >$200K ROI and strong community support need executive review',
+                'ideaCount': len(high_priority),
+                'estimatedValue': sum(i.get('aiAnalysis', {}).get('executiveAnalysis', {}).get('netValue3Year', 0) for i in high_priority),
+                'dueDate': 'Within 1 week',
+                'owner': 'Chief Innovation Officer'
+            })
+        
+        quick_wins = [i for i in ideas if 
+                     i.get('aiAnalysis', {}).get('overallScore', 0) >= 7 and
+                     i.get('aiAnalysis', {}).get('executiveAnalysis', {}).get('netValue3Year', 0) > 100000 and
+                     ('3' in str(i.get('aiAnalysis', {}).get('timelineEstimateGeneral', '')) or
+                     '4' in str(i.get('aiAnalysis', {}).get('timelineEstimateGeneral', '')))]
+        
+        if quick_wins:
+            action_items.append({
+                'priority': 'High',
+                'action': 'Fast-Track Quick Win Projects',
+                'description': f'{len(quick_wins)} ideas with high feasibility and short timelines ready for immediate implementation',
+                'ideaCount': len(quick_wins),
+                'estimatedValue': sum(i.get('aiAnalysis', {}).get('executiveAnalysis', {}).get('netValue3Year', 0) for i in quick_wins),
+                'dueDate': 'Within 2 weeks',
+                'owner': 'Project Management Office'
+            })
+        
+        vision_aligned = [i for i in ideas if 
+                         i.get('aiAnalysis', {}).get('strategicAlignmentScore', 0) >= 4]
+        
+        if vision_aligned:
+            action_items.append({
+                'priority': 'High',
+                'action': 'Align Innovation Portfolio with Vision 2030',
+                'description': f'{len(vision_aligned)} ideas strongly align with strategic pillars - prioritize for funding',
+                'ideaCount': len(vision_aligned),
+                'estimatedValue': sum(i.get('aiAnalysis', {}).get('executiveAnalysis', {}).get('netValue3Year', 0) for i in vision_aligned),
+                'dueDate': 'Within 1 month',
+                'owner': 'Strategy Team'
+            })
+        
+        dept_counts = {}
+        for idea in ideas:
+            dept = idea.get('submitterDepartment', 'Unknown')
+            dept_counts[dept] = dept_counts.get(dept, 0) + 1
+        
+        low_participation = [dept for dept, count in dept_counts.items() if count < 3]
+        if low_participation:
+            action_items.append({
+                'priority': 'Medium',
+                'action': 'Boost Engagement in Underrepresented Departments',
+                'description': f'{len(low_participation)} departments have low participation - conduct outreach and training',
+                'ideaCount': len(low_participation),
+                'estimatedValue': 0,
+                'dueDate': 'Ongoing',
+                'owner': 'HR & Communications'
+            })
+        
+        high_risk_value = [i for i in ideas if 
+                          i.get('aiAnalysis', {}).get('executiveAnalysis', {}).get('netValue3Year', 0) > 300000]
+        
+        if high_risk_value:
+            action_items.append({
+                'priority': 'Medium',
+                'action': 'Conduct Risk Assessment for High-Value Projects',
+                'description': f'{len(high_risk_value)} high-value ideas need detailed risk analysis and mitigation planning',
+                'ideaCount': len(high_risk_value),
+                'estimatedValue': sum(i.get('aiAnalysis', {}).get('executiveAnalysis', {}).get('netValue3Year', 0) for i in high_risk_value),
+                'dueDate': 'Within 3 weeks',
+                'owner': 'Risk Management'
+            })
+        
+        return {
+            'actionItems': sorted(action_items, key=lambda x: {'Critical': 0, 'High': 1, 'Medium': 2, 'Low': 3}.get(x['priority'], 4)),
+            'summary': {
+                'critical': len([a for a in action_items if a['priority'] == 'Critical']),
+                'high': len([a for a in action_items if a['priority'] == 'High']),
+                'medium': len([a for a in action_items if a['priority'] == 'Medium']),
+                'totalValue': sum(a.get('estimatedValue', 0) for a in action_items)
+            }
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

@@ -1,14 +1,143 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { TrendingUp, DollarSign, Users, Lightbulb, Target, Activity, CheckCircle, Clock, AlertTriangle, Brain, Heart, Briefcase, Star, Zap } from 'lucide-react'
+import { TrendingUp, DollarSign, Users, Lightbulb, Target, Activity, CheckCircle, Clock, AlertTriangle, Brain, Heart, Briefcase, Star, Zap, Shield, ThumbsUp, GitBranch, ListChecks, Building2 } from 'lucide-react'
 import { Idea } from '../types'
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, Legend, PieChart, Pie, Cell } from 'recharts'
+import { useEffect, useState } from 'react'
 
 interface ExecutiveDashboardProps {
   ideas: Idea[]
 }
 
+interface RiskAssessment {
+  ideas: Array<{
+    id: number
+    title: string
+    category: string
+    strategicRisk: number
+    technicalRisk: number
+    operationalRisk: number
+    financialRisk: number
+    overallRisk: number
+    riskLevel: string
+    mitigation: string
+  }>
+  summary: {
+    highRisk: number
+    mediumRisk: number
+    lowRisk: number
+    avgOverallRisk: number
+  }
+}
+
+interface SentimentAnalysis {
+  byDepartment: Array<{
+    department: string
+    ideaCount: number
+    totalEngagement: number
+    avgEngagement: number
+    excitement: number
+    sentiment: string
+  }>
+  byCategory: Array<{
+    category: string
+    ideaCount: number
+    totalEngagement: number
+    avgEngagement: number
+    excitement: number
+    sentiment: string
+  }>
+  overall: {
+    avgExcitement: number
+    topDepartment: string
+    topCategory: string
+  }
+}
+
+interface MaturityPipeline {
+  pipeline: {
+    realized: Array<any>
+    piloting: Array<any>
+    developing: Array<any>
+    planning: Array<any>
+    evaluating: Array<any>
+    refining: Array<any>
+  }
+  summary: {
+    realized: number
+    piloting: number
+    developing: number
+    planning: number
+    evaluating: number
+    refining: number
+    totalValue: number
+  }
+}
+
+interface ActionItem {
+  priority: string
+  action: string
+  description: string
+  ideaCount: number
+  estimatedValue: number
+  dueDate: string
+  owner: string
+}
+
+interface ActionItems {
+  actionItems: ActionItem[]
+  summary: {
+    critical: number
+    high: number
+    medium: number
+    totalValue: number
+  }
+}
+
 export function ExecutiveDashboard({ ideas }: ExecutiveDashboardProps) {
+  const [riskData, setRiskData] = useState<RiskAssessment | null>(null)
+  const [sentimentData, setSentimentData] = useState<SentimentAnalysis | null>(null)
+  const [maturityData, setMaturityData] = useState<MaturityPipeline | null>(null)
+  const [actionItemsData, setActionItemsData] = useState<ActionItems | null>(null)
+  const [solutions, setSolutions] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchExecutiveData = async () => {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+        
+        const [riskRes, sentimentRes, maturityRes, actionRes, solutionsRes] = await Promise.all([
+          fetch(`${apiUrl}/api/executive/risk-assessment`),
+          fetch(`${apiUrl}/api/executive/sentiment-analysis`),
+          fetch(`${apiUrl}/api/executive/maturity-pipeline`),
+          fetch(`${apiUrl}/api/executive/action-items`),
+          fetch(`${apiUrl}/api/solutions`)
+        ])
+
+        const [risk, sentiment, maturity, actions, solutionsList] = await Promise.all([
+          riskRes.json(),
+          sentimentRes.json(),
+          maturityRes.json(),
+          actionRes.json(),
+          solutionsRes.json()
+        ])
+
+        setRiskData(risk)
+        setSentimentData(sentiment)
+        setMaturityData(maturity)
+        setActionItemsData(actions)
+        setSolutions(solutionsList)
+      } catch (error) {
+        console.error('Error fetching executive data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchExecutiveData()
+  }, [])
+
   const totalIdeas = ideas.length
   const approvedIdeas = ideas.filter(i => i.status === 'Approved').length
   const inReviewIdeas = ideas.filter(i => i.status === 'In Review').length
@@ -672,6 +801,379 @@ export function ExecutiveDashboard({ ideas }: ExecutiveDashboardProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Risk Assessment Section */}
+      {!loading && riskData && (
+        <Card className="bg-gradient-to-br from-red-900/30 to-orange-900/30 border-red-800">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="w-6 h-6 text-red-400" />
+              Risk Assessment & Mitigation
+            </CardTitle>
+            <CardDescription className="text-slate-300">
+              Comprehensive risk analysis across strategic, technical, operational, and financial dimensions
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="p-4 bg-slate-950/50 rounded-lg border border-red-800/30">
+                <div className="text-sm text-slate-400 mb-1">High Risk</div>
+                <div className="text-2xl font-bold text-red-400">{riskData.summary.highRisk}</div>
+                <div className="text-xs text-slate-500 mt-1">ideas need attention</div>
+              </div>
+              <div className="p-4 bg-slate-950/50 rounded-lg border border-yellow-800/30">
+                <div className="text-sm text-slate-400 mb-1">Medium Risk</div>
+                <div className="text-2xl font-bold text-yellow-400">{riskData.summary.mediumRisk}</div>
+                <div className="text-xs text-slate-500 mt-1">ideas to monitor</div>
+              </div>
+              <div className="p-4 bg-slate-950/50 rounded-lg border border-green-800/30">
+                <div className="text-sm text-slate-400 mb-1">Low Risk</div>
+                <div className="text-2xl font-bold text-green-400">{riskData.summary.lowRisk}</div>
+                <div className="text-xs text-slate-500 mt-1">ideas ready to proceed</div>
+              </div>
+              <div className="p-4 bg-slate-950/50 rounded-lg border border-blue-800/30">
+                <div className="text-sm text-slate-400 mb-1">Avg Risk Score</div>
+                <div className="text-2xl font-bold text-blue-400">{riskData.summary.avgOverallRisk}/10</div>
+                <div className="text-xs text-slate-500 mt-1">portfolio average</div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-red-300 mb-2">Top Risk Areas</h3>
+              {riskData.ideas.slice(0, 5).map((idea) => (
+                <div key={idea.id} className="p-3 bg-slate-950/50 rounded-lg border border-red-800/30">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <p className="font-medium text-sm flex-1">{idea.title}</p>
+                    <Badge 
+                      variant="outline" 
+                      className={`${
+                        idea.riskLevel === 'High' ? 'bg-red-500/10 text-red-400 border-red-500/30' :
+                        idea.riskLevel === 'Medium' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30' :
+                        'bg-green-500/10 text-green-400 border-green-500/30'
+                      }`}
+                    >
+                      {idea.riskLevel}
+                    </Badge>
+                  </div>
+                  <div className="grid grid-cols-4 gap-2 text-xs">
+                    <div>
+                      <span className="text-slate-500">Strategic:</span>
+                      <span className="ml-1 text-slate-300">{idea.strategicRisk}/10</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Technical:</span>
+                      <span className="ml-1 text-slate-300">{idea.technicalRisk}/10</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Operational:</span>
+                      <span className="ml-1 text-slate-300">{idea.operationalRisk}/10</span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500">Financial:</span>
+                      <span className="ml-1 text-slate-300">{idea.financialRisk}/10</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Sentiment & Excitement Analysis */}
+      {!loading && sentimentData && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="bg-gradient-to-br from-purple-900/30 to-pink-900/30 border-purple-800">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ThumbsUp className="w-6 h-6 text-purple-400" />
+                Department Sentiment & Excitement
+              </CardTitle>
+              <CardDescription className="text-slate-300">
+                Engagement and enthusiasm levels across departments
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {sentimentData.byDepartment.slice(0, 5).map((dept) => (
+                  <div key={dept.department} className="p-3 bg-slate-950/50 rounded-lg border border-purple-800/30">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">{dept.department}</span>
+                      <Badge 
+                        variant="outline" 
+                        className={`${
+                          dept.sentiment === 'Very Positive' ? 'bg-green-500/10 text-green-400 border-green-500/30' :
+                          dept.sentiment === 'Positive' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' :
+                          dept.sentiment === 'Neutral' ? 'bg-slate-500/10 text-slate-400 border-slate-500/30' :
+                          'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'
+                        }`}
+                      >
+                        {dept.sentiment}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs text-slate-400">
+                      <span>{dept.ideaCount} ideas</span>
+                      <span>•</span>
+                      <span>Excitement: {dept.excitement}/100</span>
+                      <span>•</span>
+                      <span>Avg Engagement: {dept.avgEngagement}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-4 p-3 bg-purple-950/30 rounded-lg border border-purple-800/30">
+                <div className="text-xs text-purple-300 space-y-1">
+                  <div>Overall Excitement: <strong>{sentimentData.overall.avgExcitement}/100</strong></div>
+                  <div>Top Department: <strong>{sentimentData.overall.topDepartment}</strong></div>
+                  <div>Top Category: <strong>{sentimentData.overall.topCategory}</strong></div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-indigo-900/30 to-blue-900/30 border-indigo-800">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ThumbsUp className="w-6 h-6 text-indigo-400" />
+                Category Sentiment Analysis
+              </CardTitle>
+              <CardDescription className="text-slate-300">
+                Innovation excitement by category type
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {sentimentData.byCategory.slice(0, 5).map((cat) => (
+                  <div key={cat.category} className="p-3 bg-slate-950/50 rounded-lg border border-indigo-800/30">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium">{cat.category}</span>
+                      <Badge 
+                        variant="outline" 
+                        className={`${
+                          cat.sentiment === 'Very Positive' ? 'bg-green-500/10 text-green-400 border-green-500/30' :
+                          cat.sentiment === 'Positive' ? 'bg-blue-500/10 text-blue-400 border-blue-500/30' :
+                          cat.sentiment === 'Neutral' ? 'bg-slate-500/10 text-slate-400 border-slate-500/30' :
+                          'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'
+                        }`}
+                      >
+                        {cat.sentiment}
+                      </Badge>
+                    </div>
+                    <div className="flex items-center gap-4 text-xs text-slate-400">
+                      <span>{cat.ideaCount} ideas</span>
+                      <span>•</span>
+                      <span>Excitement: {cat.excitement}/100</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Maturity Pipeline */}
+      {!loading && maturityData && (
+        <Card className="bg-gradient-to-br from-cyan-900/30 to-teal-900/30 border-cyan-800">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <GitBranch className="w-6 h-6 text-cyan-400" />
+              Innovation Maturity Pipeline
+            </CardTitle>
+            <CardDescription className="text-slate-300">
+              Ideas categorized by development stage - from concept to realization
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              <div className="p-3 bg-slate-950/50 rounded-lg border border-green-800/30">
+                <div className="text-xs text-slate-400 mb-1">Realized</div>
+                <div className="text-2xl font-bold text-green-400">{maturityData.summary.realized}</div>
+                <div className="text-xs text-slate-500 mt-1">implemented</div>
+              </div>
+              <div className="p-3 bg-slate-950/50 rounded-lg border border-blue-800/30">
+                <div className="text-xs text-slate-400 mb-1">Piloting</div>
+                <div className="text-2xl font-bold text-blue-400">{maturityData.summary.piloting}</div>
+                <div className="text-xs text-slate-500 mt-1">in testing</div>
+              </div>
+              <div className="p-3 bg-slate-950/50 rounded-lg border border-cyan-800/30">
+                <div className="text-xs text-slate-400 mb-1">Developing</div>
+                <div className="text-2xl font-bold text-cyan-400">{maturityData.summary.developing}</div>
+                <div className="text-xs text-slate-500 mt-1">in progress</div>
+              </div>
+              <div className="p-3 bg-slate-950/50 rounded-lg border border-purple-800/30">
+                <div className="text-xs text-slate-400 mb-1">Planning</div>
+                <div className="text-2xl font-bold text-purple-400">{maturityData.summary.planning}</div>
+                <div className="text-xs text-slate-500 mt-1">approved</div>
+              </div>
+              <div className="p-3 bg-slate-950/50 rounded-lg border border-yellow-800/30">
+                <div className="text-xs text-slate-400 mb-1">Evaluating</div>
+                <div className="text-2xl font-bold text-yellow-400">{maturityData.summary.evaluating}</div>
+                <div className="text-xs text-slate-500 mt-1">under review</div>
+              </div>
+              <div className="p-3 bg-slate-950/50 rounded-lg border border-slate-700">
+                <div className="text-xs text-slate-400 mb-1">Refining</div>
+                <div className="text-2xl font-bold text-slate-400">{maturityData.summary.refining}</div>
+                <div className="text-xs text-slate-500 mt-1">needs work</div>
+              </div>
+            </div>
+
+            <div className="p-4 bg-cyan-950/30 rounded-lg border border-cyan-800/30">
+              <div className="text-sm font-semibold text-cyan-300 mb-2">Pipeline Value</div>
+              <div className="text-2xl font-bold text-cyan-400">
+                ${(maturityData.summary.totalValue / 1000000).toFixed(1)}M
+              </div>
+              <div className="text-xs text-slate-400 mt-1">Total 3-year value across all pipeline stages</div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Executive Action Items */}
+      {!loading && actionItemsData && (
+        <Card className="bg-gradient-to-br from-orange-900/30 to-red-900/30 border-orange-800">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ListChecks className="w-6 h-6 text-orange-400" />
+              Executive Action Items
+            </CardTitle>
+            <CardDescription className="text-slate-300">
+              Prioritized recommendations for leadership review and decision
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="p-4 bg-slate-950/50 rounded-lg border border-red-800/30">
+                <div className="text-sm text-slate-400 mb-1">Critical</div>
+                <div className="text-2xl font-bold text-red-400">{actionItemsData.summary.critical}</div>
+                <div className="text-xs text-slate-500 mt-1">immediate action</div>
+              </div>
+              <div className="p-4 bg-slate-950/50 rounded-lg border border-orange-800/30">
+                <div className="text-sm text-slate-400 mb-1">High Priority</div>
+                <div className="text-2xl font-bold text-orange-400">{actionItemsData.summary.high}</div>
+                <div className="text-xs text-slate-500 mt-1">within 2 weeks</div>
+              </div>
+              <div className="p-4 bg-slate-950/50 rounded-lg border border-yellow-800/30">
+                <div className="text-sm text-slate-400 mb-1">Medium Priority</div>
+                <div className="text-2xl font-bold text-yellow-400">{actionItemsData.summary.medium}</div>
+                <div className="text-xs text-slate-500 mt-1">within 1 month</div>
+              </div>
+              <div className="p-4 bg-slate-950/50 rounded-lg border border-green-800/30">
+                <div className="text-sm text-slate-400 mb-1">Total Value</div>
+                <div className="text-2xl font-bold text-green-400">${(actionItemsData.summary.totalValue / 1000000).toFixed(1)}M</div>
+                <div className="text-xs text-slate-500 mt-1">at stake</div>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {actionItemsData.actionItems.map((item, idx) => (
+                <div key={idx} className="p-4 bg-slate-950/50 rounded-lg border border-orange-800/30">
+                  <div className="flex items-start gap-3">
+                    <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                      item.priority === 'Critical' ? 'bg-red-500/20 text-red-400' :
+                      item.priority === 'High' ? 'bg-orange-500/20 text-orange-400' :
+                      'bg-yellow-500/20 text-yellow-400'
+                    }`}>
+                      {idx + 1}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <h4 className="font-semibold text-sm">{item.action}</h4>
+                        <Badge 
+                          variant="outline" 
+                          className={`${
+                            item.priority === 'Critical' ? 'bg-red-500/10 text-red-400 border-red-500/30' :
+                            item.priority === 'High' ? 'bg-orange-500/10 text-orange-400 border-orange-500/30' :
+                            'bg-yellow-500/10 text-yellow-400 border-yellow-500/30'
+                          }`}
+                        >
+                          {item.priority}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-slate-300 mb-2">{item.description}</p>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs text-slate-400">
+                        <div>
+                          <span className="text-slate-500">Ideas:</span>
+                          <span className="ml-1 font-medium">{item.ideaCount}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-500">Value:</span>
+                          <span className="ml-1 font-medium text-green-400">${(item.estimatedValue / 1000000).toFixed(1)}M</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-500">Due:</span>
+                          <span className="ml-1 font-medium">{item.dueDate}</span>
+                        </div>
+                        <div>
+                          <span className="text-slate-500">Owner:</span>
+                          <span className="ml-1 font-medium">{item.owner}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Historical Solutions from Other Hospitals */}
+      {!loading && solutions && solutions.length > 0 && (
+        <Card className="bg-gradient-to-br from-emerald-900/30 to-green-900/30 border-emerald-800">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Building2 className="w-6 h-6 text-emerald-400" />
+              Historical Solutions from ContosoHealth Network
+            </CardTitle>
+            <CardDescription className="text-slate-300">
+              Proven innovations deployed at other ContosoHealth hospitals - learn from success stories
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {solutions.slice(0, 6).map((solution) => (
+                <div key={solution.id} className="p-4 bg-slate-950/50 rounded-lg border border-emerald-800/30">
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <div className="flex-1">
+                      <h4 className="font-semibold text-sm mb-1">{solution.title}</h4>
+                      <div className="flex items-center gap-2 text-xs text-slate-400 mb-2">
+                        <Badge variant="secondary" className="bg-emerald-500/10 text-emerald-400">
+                          {solution.hospital_name}
+                        </Badge>
+                        <span>•</span>
+                        <span>{solution.category}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-300 mb-2">{solution.description}</p>
+                  <div className="p-2 bg-emerald-950/30 rounded border border-emerald-800/20 mb-2">
+                    <div className="text-xs text-emerald-300">
+                      <strong>Results:</strong> {solution.results}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 text-xs text-slate-400">
+                    <div>
+                      <span className="text-slate-500">Contact:</span>
+                      <span className="ml-1 font-medium">{solution.contact_name}</span>
+                    </div>
+                    <span>•</span>
+                    <div>
+                      <span className="text-slate-500">Email:</span>
+                      <span className="ml-1 font-medium text-emerald-400">{solution.contact_email}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 p-3 bg-emerald-950/30 rounded-lg border border-emerald-800/30">
+              <div className="text-xs text-emerald-300">
+                <strong>Network Advantage:</strong> {solutions.length} proven solutions available for adaptation across ContosoHealth hospitals. Contact solution owners to learn implementation best practices and avoid common pitfalls.
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

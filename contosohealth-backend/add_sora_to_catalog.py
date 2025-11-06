@@ -1,7 +1,7 @@
 import sqlite3
 import json
 
-DB_PATH = "adventhealth_ideas.db"
+DB_PATH = "contosohealth_ideas.db"
 
 sora_data = {
     "id": "APP-008",
