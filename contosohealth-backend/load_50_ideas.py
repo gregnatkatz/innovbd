@@ -123,7 +123,9 @@ async def generate_ai_analysis(idea, quality):
 async def load_ideas():
     """Load all 50 diverse healthcare ideas into the database"""
     
-    with open("/home/ubuntu/contosohealth-innovation-platform/50-diverse-healthcare-ideas.json", "r") as f:
+    from pathlib import Path
+    json_path = Path(__file__).resolve().parents[1] / "50-diverse-healthcare-ideas.json"
+    with open(json_path, "r") as f:
         ideas = json.load(f)
     
     async with aiosqlite.connect(DB_PATH) as db:

@@ -472,6 +472,203 @@ async def seed_existing_projects(db):
     await db.commit()
     print(f"Seeded {len(projects)} existing projects into database")
 
+async def seed_applications(db):
+    """Seed database with healthcare applications/systems"""
+    import uuid
+    
+    applications = [
+        {
+            "id": "epic",
+            "name": "Epic EHR",
+            "description": "Electronic Health Record system",
+            "vendor": "Epic Systems",
+            "typical_cost": 50000,
+            "typical_timeline_weeks": 12,
+            "sme_name": "Sarah Chen",
+            "sme_email": "sarah.chen@contosohealth.com"
+        },
+        {
+            "id": "pyxis",
+            "name": "Pyxis MedStation",
+            "description": "Automated medication dispensing system",
+            "vendor": "BD",
+            "typical_cost": 25000,
+            "typical_timeline_weeks": 8,
+            "sme_name": "Michael Chen",
+            "sme_email": "michael.chen@contosohealth.com"
+        },
+        {
+            "id": "rtls",
+            "name": "Bluetooth RTLS",
+            "description": "Real-time location tracking system",
+            "vendor": "Various",
+            "typical_cost": 30000,
+            "typical_timeline_weeks": 10,
+            "sme_name": "Jennifer Walsh",
+            "sme_email": "jennifer.walsh@contosohealth.com"
+        },
+        {
+            "id": "azure",
+            "name": "Microsoft Azure",
+            "description": "Cloud platform and AI services",
+            "vendor": "Microsoft",
+            "typical_cost": 20000,
+            "typical_timeline_weeks": 6,
+            "sme_name": "Robert Kim",
+            "sme_email": "robert.kim@contosohealth.com"
+        },
+        {
+            "id": "workday",
+            "name": "Workday",
+            "description": "HR and scheduling system",
+            "vendor": "Workday",
+            "typical_cost": 40000,
+            "typical_timeline_weeks": 16,
+            "sme_name": "Amanda Foster",
+            "sme_email": "amanda.foster@contosohealth.com"
+        },
+        {
+            "id": "servicenow",
+            "name": "ServiceNow",
+            "description": "IT service management platform",
+            "vendor": "ServiceNow",
+            "typical_cost": 35000,
+            "typical_timeline_weeks": 12,
+            "sme_name": "Lisa Rodriguez",
+            "sme_email": "lisa.rodriguez@contosohealth.com"
+        },
+        {
+            "id": "power-platform",
+            "name": "Power Platform",
+            "description": "Low-code development platform",
+            "vendor": "Microsoft",
+            "typical_cost": 15000,
+            "typical_timeline_weeks": 4,
+            "sme_name": "Emily Foster",
+            "sme_email": "emily.foster@contosohealth.com"
+        }
+    ]
+    
+    for app in applications:
+        await db.execute("""
+            INSERT INTO applications (id, name, description, vendor, typical_cost, typical_timeline_weeks, sme_name, sme_email)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        """, (app["id"], app["name"], app["description"], app["vendor"], app["typical_cost"], 
+              app["typical_timeline_weeks"], app["sme_name"], app["sme_email"]))
+    
+    await db.commit()
+
+async def seed_pain_points(db):
+    """Seed database with common healthcare pain points and solutions"""
+    import uuid
+    
+    pain_points = [
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "medication administration delays and tracking",
+            "app_id": "epic",
+            "ideas_submitted": 47,
+            "potential_value": "$350K/year",
+            "solutions": json.dumps(["MedSync pilot at Orlando", "Rover barcode enhancements", "Real-time medication tracking"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "equipment tracking for wheelchairs and mobile assets",
+            "app_id": "rtls",
+            "ideas_submitted": 23,
+            "potential_value": "$180K/year",
+            "solutions": json.dumps(["RTLS tags pilot at Tampa", "Asset map dashboard", "Bluetooth tracking system"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "discharge prescriptions lost or missed",
+            "app_id": "epic",
+            "ideas_submitted": 39,
+            "potential_value": "$250K/year",
+            "solutions": json.dumps(["Automated discharge prescription workflow", "Pharmacy integration", "Text notifications"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "ED lab turnaround time too long",
+            "app_id": "epic",
+            "ideas_submitted": 52,
+            "potential_value": "$400K/year",
+            "solutions": json.dumps(["Point-of-care testing expansion", "Rapid lab protocols", "Lab workflow optimization"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "sepsis alert fatigue and false positives",
+            "app_id": "epic",
+            "ideas_submitted": 45,
+            "potential_value": "$500K/year",
+            "solutions": json.dumps(["ML-based sepsis prediction", "Alert triage system", "Clinical context integration"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "wound photo documentation inconsistency",
+            "app_id": "azure",
+            "ideas_submitted": 29,
+            "potential_value": "$120K/year",
+            "solutions": json.dumps(["Standardized photo app", "AI wound measurement", "Epic integration"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "scheduling system confusion and inefficiency",
+            "app_id": "workday",
+            "ideas_submitted": 72,
+            "potential_value": "$300K/year",
+            "solutions": json.dumps(["Mobile scheduling app", "Self-service shift swaps", "AI-optimized schedules"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "interpreter availability and wait times",
+            "app_id": "power-platform",
+            "ideas_submitted": 38,
+            "potential_value": "$90K/year",
+            "solutions": json.dumps(["On-call interpreter pool", "AI translation assist", "Video interpretation expansion"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "bed status visibility and patient flow",
+            "app_id": "servicenow",
+            "ideas_submitted": 30,
+            "potential_value": "$1.2M/year",
+            "solutions": json.dumps(["Real-time bed dashboard", "Housekeeping integration", "Transport workflow"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "patient belongings tracking and loss prevention",
+            "app_id": "epic",
+            "ideas_submitted": 41,
+            "potential_value": "$75K/year",
+            "solutions": json.dumps(["Barcode tracking system", "Photo documentation", "Transfer alerts"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "fall prevention and patient safety monitoring",
+            "app_id": "azure",
+            "ideas_submitted": 61,
+            "potential_value": "$450K/year",
+            "solutions": json.dumps(["AI fall risk assessment", "Smart bed sensors", "Video monitoring"])
+        },
+        {
+            "id": str(uuid.uuid4()),
+            "pain_point": "new nurse orientation and retention",
+            "app_id": "power-platform",
+            "ideas_submitted": 44,
+            "potential_value": "$200K/year",
+            "solutions": json.dumps(["Extended orientation program", "Mentor matching system", "Simulation training"])
+        }
+    ]
+    
+    for pp in pain_points:
+        await db.execute("""
+            INSERT INTO pain_points (id, pain_point, app_id, ideas_submitted, potential_value, solutions)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (pp["id"], pp["pain_point"], pp["app_id"], pp["ideas_submitted"], pp["potential_value"], pp["solutions"]))
+    
+    await db.commit()
+
 async def init_db():
     async with aiosqlite.connect(DB_PATH) as db:
         await db.execute("""
@@ -557,6 +754,31 @@ async def init_db():
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
             )
         """)
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS applications (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                description TEXT,
+                vendor TEXT,
+                typical_cost INTEGER,
+                typical_timeline_weeks INTEGER,
+                sme_name TEXT,
+                sme_email TEXT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS pain_points (
+                id TEXT PRIMARY KEY,
+                pain_point TEXT NOT NULL,
+                app_id TEXT NOT NULL,
+                ideas_submitted INTEGER DEFAULT 0,
+                potential_value TEXT,
+                solutions TEXT,
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (app_id) REFERENCES applications(id)
+            )
+        """)
         await db.commit()
         
         async with db.execute("SELECT COUNT(*) FROM projects") as cursor:
@@ -568,6 +790,16 @@ async def init_db():
             row = await cursor.fetchone()
             if row[0] == 0:
                 await seed_existing_solutions(db)
+        
+        async with db.execute("SELECT COUNT(*) FROM applications") as cursor:
+            row = await cursor.fetchone()
+            if row[0] == 0:
+                await seed_applications(db)
+        
+        async with db.execute("SELECT COUNT(*) FROM pain_points") as cursor:
+            row = await cursor.fetchone()
+            if row[0] == 0:
+                await seed_pain_points(db)
 
 async def detect_systems(text: str) -> List[Dict[str, Any]]:
     """Agent 1: System Context Analyzer - Use GPT-4o to detect healthcare systems and technologies"""
