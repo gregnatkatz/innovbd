@@ -202,5 +202,140 @@ export const sampleComments: Record<string, any[]> = {
         }
       ]
     }
+  ],
+  'idea-014': [
+    {
+      id: 'c14-1',
+      author: 'Michael Chen',
+      department: 'IT',
+      createdAt: '2025-11-03T10:30:00Z',
+      content: 'I completely agree! Epic is painfully slow. We need better hardware or optimization. This affects patient care when we can\'t access records quickly.',
+      replies: [
+        {
+          id: 'c14-1-r1',
+          author: 'Patricia Davis',
+          department: 'Technology/Digital Innovation',
+          createdAt: '2025-11-03T11:15:00Z',
+          content: 'Thanks for the support! IT has been saying we need upgrades for months. Maybe if enough staff speak up, leadership will prioritize this.',
+          replies: []
+        }
+      ]
+    },
+    {
+      id: 'c14-2',
+      author: 'Dr. Jennifer Lee',
+      department: 'Internal Medicine',
+      createdAt: '2025-11-03T14:20:00Z',
+      content: 'The freezing is the worst part. I lose my work and have to start over. We need a solution ASAP.',
+      replies: []
+    }
+  ],
+  'idea-018': [
+    {
+      id: 'c18-1',
+      author: 'Dr. Sarah Mitchell',
+      department: 'Emergency Medicine',
+      createdAt: '2025-11-04T09:00:00Z',
+      content: 'The scheduling system is a nightmare! I can never get my shifts swapped when I need to. We need a better interface.',
+      replies: [
+        {
+          id: 'c18-1-r1',
+          author: 'Karen White',
+          department: 'Workforce/Culture',
+          createdAt: '2025-11-04T09:45:00Z',
+          content: 'Exactly! And when it crashes, we lose all our requests. I\'ve been pushing for an upgrade for months.',
+          replies: []
+        }
+      ]
+    },
+    {
+      id: 'c18-2',
+      author: 'Amanda Foster',
+      department: 'Nursing Administration',
+      createdAt: '2025-11-04T13:30:00Z',
+      content: 'We should look at what other hospitals are using. There must be better scheduling software out there.',
+      replies: []
+    }
+  ],
+  'idea-008': [
+    {
+      id: 'c8-1',
+      author: 'Dr. Lisa Rodriguez',
+      department: 'Cardiology',
+      createdAt: '2025-11-02T08:15:00Z',
+      content: 'Parking is a huge issue! I arrive 30 minutes early just to find a spot. We need more staff parking or a shuttle system.',
+      replies: [
+        {
+          id: 'c8-1-r1',
+          author: 'Robert Martinez',
+          department: 'Facilities/Infrastructure',
+          createdAt: '2025-11-02T09:00:00Z',
+          content: 'I\'ve proposed a multi-level parking structure to leadership. With enough support from staff, we might get approval.',
+          replies: []
+        }
+      ]
+    },
+    {
+      id: 'c8-2',
+      author: 'Jennifer Walsh',
+      department: 'Patient Services',
+      createdAt: '2025-11-02T11:45:00Z',
+      content: 'Patients complain about parking costs too. Maybe we could validate parking for patients with financial hardship?',
+      replies: []
+    }
+  ],
+  'idea-015': [
+    {
+      id: 'c15-1',
+      author: 'Sarah Johnson',
+      department: 'Nursing - Medical/Surgical',
+      createdAt: '2025-11-01T16:20:00Z',
+      content: 'Fall prevention is critical! We need better bed alarms and patient monitoring. I\'ve seen too many preventable falls.',
+      replies: [
+        {
+          id: 'c15-1-r1',
+          author: 'Dr. Michelle Adams',
+          department: 'Clinical Excellence/Quality',
+          createdAt: '2025-11-01T17:00:00Z',
+          content: 'Thank you! I\'m working with Quality to pilot new fall prevention protocols. Your input would be valuable.',
+          replies: []
+        }
+      ]
+    },
+    {
+      id: 'c15-2',
+      author: 'Michael Chen',
+      department: 'IT',
+      createdAt: '2025-11-02T10:30:00Z',
+      content: 'Could we use wearable sensors to predict falls? I\'ve read about hospitals using this technology successfully.',
+      replies: []
+    }
+  ],
+  'idea-047': [
+    {
+      id: 'c47-1',
+      author: 'Dr. Robert Kim',
+      department: 'Emergency Department',
+      createdAt: '2025-11-05T11:00:00Z',
+      content: 'Clinic wait times are unacceptable! We need better scheduling algorithms or more providers. Patients are frustrated and so are we.',
+      replies: [
+        {
+          id: 'c47-1-r1',
+          author: 'Dr. Jennifer Lee',
+          department: 'Process Improvement',
+          createdAt: '2025-11-05T11:45:00Z',
+          content: 'I\'ve been analyzing our scheduling data. We could reduce wait times by 40% with better appointment spacing and buffer times.',
+          replies: []
+        }
+      ]
+    },
+    {
+      id: 'c47-2',
+      author: 'Amanda Foster',
+      department: 'Patient Experience',
+      createdAt: '2025-11-05T14:20:00Z',
+      content: 'Patient satisfaction scores are dropping because of wait times. This needs to be a priority for leadership.',
+      replies: []
+    }
   ]
 }
