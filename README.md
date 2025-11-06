@@ -196,29 +196,60 @@ The platform features 4 AI agents that automatically analyze every submitted ide
 
 ## Screenshots
 
-### Dashboard
-![Dashboard](./screenshots/localhost_5173_130939.png)
-*Dashboard showing top ideas by engagement with profile photos, stats, and gamification elements*
+### End-to-End Testing Workflow
 
-### Browse Ideas
-![Browse Ideas](./screenshots/localhost_5173_131253.png)
-*Browse all 50 healthcare innovation ideas with search, filters, and profile photos*
+The ContosoHealth Innovation Platform was tested end-to-end by submitting a patient intake idea and verifying all 5 AI agents executed successfully with Azure OpenAI integration.
 
-### Idea Detail with Comments
-![Idea Detail](./screenshots/localhost_5173_131303.png)
-*Detailed idea view showing problem statement, proposed solution, AI analysis, and threaded discussions with profile photos*
+#### 1. Staff Dashboard with Expandable Comments and Inline Video
+![Dashboard with Comments](./screenshots/dashboard-expandable-comments.png)
+*Dashboard showing top ideas by engagement with expandable comment threads and inline Sora video players*
 
-### Success Stories - Staff View
-![Success Stories Staff View](./screenshots/localhost_5173_131417.png)
-*Success story showing complete journey and quality improvements for staff perspective*
+#### 2. Success Stories with Inline Video Players
+![Success Stories with Videos](./screenshots/success-stories-videos.png)
+*Success Stories showcasing 3 implemented ideas with inline Sora-generated demo videos*
 
-### Success Stories - Executive View
-![Success Stories Executive View](./screenshots/localhost_5173_131342.png)
-*Success story showing complete journey and financial impact for executive perspective*
+#### 3. Executive View with Strategic Analytics
+![Executive View](./screenshots/executive-view-analytics.png)
+*Executive Dashboard showing risk assessment, sentiment analysis, maturity pipeline, and action items*
 
-### Leaderboard
-![Leaderboard](./screenshots/localhost_5173_130951.png)
-*Leaderboard showing top contributors with profile photos, points, badges, and rewards catalog*
+#### 4. Browse Ideas
+![Browse Ideas](./screenshots/browse-ideas.png)
+*Browse all 55 healthcare innovation ideas with search, filters, and engagement metrics*
+
+#### 5. AI Agent Analysis Results
+![AI Analysis](./screenshots/ai-agent-analysis.png)
+*Complete AI analysis showing all 5 agents: System Context, Architecture Generator, Feasibility Scorer, Solution Discovery, and Sora Video Generation*
+
+### Key Features Demonstrated
+
+**Social Collaboration:**
+- Expandable comment threads with nested replies
+- Upvote functionality on idea cards
+- Discussion threads showing author, department, and timestamps
+- "Watch Demo" buttons for ideas with Sora videos
+
+**AI-Powered Analysis:**
+- All 5 AI agents working in real-time with Azure OpenAI
+- System Context Engine detecting ContosoHealth systems (Epic, Pyxis, Azure, etc.)
+- Solution Architecture Generator creating implementation blueprints
+- Feasibility Scorer providing multi-dimensional scoring
+- Internal Solution Discovery finding similar solutions at other hospitals
+- Sora Video Generation creating AI-generated demo videos
+
+**Executive View Enhancements:**
+- Risk Assessment & Mitigation (50 medium-risk ideas analyzed)
+- Department Sentiment & Excitement (86.8/100 overall excitement)
+- Category Sentiment Analysis (all categories "Very Positive")
+- Innovation Maturity Pipeline ($27.7M total value across 6 stages)
+- Executive Action Items (4 prioritized actions worth $72.5M)
+- Historical Solutions from ContosoHealth Network (6 proven solutions)
+- Enhanced AI Executive Summary with Vision 2030 alignment
+
+**Sora Video Integration:**
+- 3 Sora-generated videos added to top ideas (idea-014, idea-018, idea-047)
+- Inline video players in both Dashboard and Success Stories
+- Videos demonstrate proposed solutions in action
+- Integration with Azure AI Foundry for video generation and tracking
 
 ## Technology Stack
 
