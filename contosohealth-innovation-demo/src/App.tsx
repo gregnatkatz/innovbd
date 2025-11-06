@@ -24,7 +24,9 @@ import {
 } from 'lucide-react'
 
 import { Idea, Persona, CopilotMessage, AgentStatusState, AgentResults } from './types'
-import { successStories } from './data/constants'
+import { successStories, sampleComments } from './data/constants'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { ThumbsUp, MessageSquare, Play } from 'lucide-react'
 import { DashboardView } from './components/DashboardView'
 import { BrowseIdeasView } from './components/BrowseIdeasView'
 import { SubmitIdeaForm } from './components/SubmitIdeaForm'
@@ -55,6 +57,7 @@ function App() {
   const [filterDepartment, setFilterDepartment] = useState<string>('all')
   const [ideas, setIdeas] = useState<Idea[]>([])
   const [selectedIdea, setSelectedIdea] = useState<Idea | null>(null)
+  const [selectedIdeaAnalysis, setSelectedIdeaAnalysis] = useState<any>(null)
   const [copilotOpen, setCopilotOpen] = useState(false)
   const [copilotMessages, setCopilotMessages] = useState<CopilotMessage[]>([
     { role: 'assistant', content: 'Hi! I can help you find ideas, answer questions about the innovation process, or provide insights. What would you like to know?' }
@@ -252,6 +255,23 @@ function App() {
 
   const handleVote = async (ideaId: string, voteType: 'up' | 'down') => {
     console.log(`Voting ${voteType} on idea ${ideaId}`)
+    setIdeas(ideas.map(idea => {
+      if (idea.id === ideaId) {
+        return {
+          ...idea,
+          upvotes: voteType === 'up' ? idea.upvotes + 1 : idea.upvotes,
+          downvotes: voteType === 'down' ? idea.downvotes + 1 : idea.downvotes
+        }
+      }
+      return idea
+    }))
+    if (selectedIdea?.id === ideaId) {
+      setSelectedIdea({
+        ...selectedIdea,
+        upvotes: voteType === 'up' ? selectedIdea.upvotes + 1 : selectedIdea.upvotes,
+        downvotes: voteType === 'down' ? selectedIdea.downvotes + 1 : selectedIdea.downvotes
+      })
+    }
   }
 
   const handleDeleteIdea = async (ideaId: string) => {
@@ -269,9 +289,33 @@ function App() {
     }
   }
 
-  const handleViewOriginalIdea = (ideaId: string) => {
+  const handleViewOriginalIdea = async (ideaId: string) => {
     const originalIdea = ideas.find(i => i.id === ideaId)
-    if (originalIdea) setSelectedIdea(originalIdea)
+    if (originalIdea) {
+      setSelectedIdea(originalIdea)
+      try {
+        const response = await fetch(`${API_URL}/api/ideas/${ideaId}/analysis`)
+        if (response.ok) {
+          const analysisData = await response.json()
+          setSelectedIdeaAnalysis(analysisData)
+        }
+      } catch (error) {
+        console.error('Error fetching analysis:', error)
+      }
+    }
+  }
+
+  const handleIdeaClick = async (idea: Idea) => {
+    setSelectedIdea(idea)
+    try {
+      const response = await fetch(`${API_URL}/api/ideas/${idea.id}/analysis`)
+      if (response.ok) {
+        const analysisData = await response.json()
+        setSelectedIdeaAnalysis(analysisData)
+      }
+    } catch (error) {
+      console.error('Error fetching analysis:', error)
+    }
   }
 
   return (
@@ -466,7 +510,7 @@ function App() {
                 <DashboardView 
                   ideas={ideas} 
                   persona={persona} 
-                  onIdeaClick={setSelectedIdea} 
+                  onIdeaClick={handleIdeaClick} 
                 />
               )
             )}
@@ -574,20 +618,36 @@ function App() {
         </div>
       </div>
 
-      {/* Idea Detail Modal - Placeholder for future implementation */}
+      {/* Idea Detail Modal */}
       {selectedIdea && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <Card className="bg-slate-900 border-slate-800 max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => { setSelectedIdea(null); setSelectedIdeaAnalysis(null); }}>
+          <Card className="bg-slate-900 border-slate-800 max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
             <CardHeader className="border-b border-slate-800">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
-                  <CardTitle className="text-2xl mb-2">{selectedIdea.title}</CardTitle>
+                  <div className="flex items-center gap-3 mb-2">
+                    <CardTitle className="text-2xl">{selectedIdea.title}</CardTitle>
+                    <Badge variant="outline">{selectedIdea.categoryType}</Badge>
+                  </div>
                   <CardDescription>{selectedIdea.description}</CardDescription>
+                  <div className="flex items-center gap-4 mt-3">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleVote(selectedIdea.id, 'up')}
+                      className="text-slate-300 hover:text-blue-400"
+                    >
+                      <ThumbsUp className="w-4 h-4 mr-1" />
+                      {selectedIdea.upvotes} upvotes
+                    </Button>
+                    <span className="text-slate-500">•</span>
+                    <span className="text-sm text-slate-400">{selectedIdea.commentCount} comments</span>
+                  </div>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => setSelectedIdea(null)}
+                  onClick={() => { setSelectedIdea(null); setSelectedIdeaAnalysis(null); }}
                 >
                   <X className="w-5 h-5" />
                 </Button>
@@ -606,6 +666,86 @@ function App() {
                 <div>
                   <h3 className="font-semibold mb-2">Expected Benefit</h3>
                   <p className="text-slate-300">{selectedIdea.expectedBenefit}</p>
+                </div>
+
+                {/* Inline Sora Video Player */}
+                {selectedIdeaAnalysis?.sora?.video?.url && (
+                  <>
+                    <Separator className="bg-slate-800" />
+                    <div>
+                      <h3 className="font-semibold mb-3 flex items-center gap-2">
+                        <Play className="w-5 h-5 text-blue-500" />
+                        AI-Generated Demo Video
+                      </h3>
+                      <div className="relative rounded-lg overflow-hidden bg-slate-950 border border-slate-800">
+                        <video 
+                          controls 
+                          className="w-full h-auto"
+                          poster={selectedIdeaAnalysis?.sora?.video?.thumbnail}
+                        >
+                          <source src={selectedIdeaAnalysis.sora.video.url} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
+                      </div>
+                      <p className="text-xs text-slate-500 mt-2">
+                        This video was automatically generated by AI to visualize the proposed solution.
+                      </p>
+                    </div>
+                  </>
+                )}
+
+                <Separator className="bg-slate-800" />
+
+                {/* Discussion Threads */}
+                <div>
+                  <h3 className="font-semibold mb-4 flex items-center gap-2">
+                    <MessageSquare className="w-5 h-5" />
+                    Discussion ({selectedIdea.commentCount})
+                  </h3>
+                  <div className="space-y-4">
+                    {sampleComments[selectedIdea.id]?.map(comment => (
+                      <div key={comment.id} className="space-y-3">
+                        <div className="flex gap-3">
+                          <Avatar className="w-8 h-8">
+                            <AvatarFallback className="bg-blue-500/10 text-blue-500 text-xs">
+                              {comment.author.split(' ').map(n => n[0]).join('')}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="font-semibold text-sm">{comment.author}</span>
+                              <span className="text-xs text-slate-500">{comment.department}</span>
+                              <span className="text-xs text-slate-500">•</span>
+                              <span className="text-xs text-slate-500">{new Date(comment.createdAt).toLocaleDateString()}</span>
+                            </div>
+                            <p className="text-sm text-slate-300">{comment.content}</p>
+                            {comment.replies && comment.replies.length > 0 && (
+                              <div className="mt-3 ml-4 pl-4 border-l-2 border-slate-800 space-y-3">
+                                {comment.replies.map(reply => (
+                                  <div key={reply.id} className="flex gap-3">
+                                    <Avatar className="w-6 h-6">
+                                      <AvatarFallback className="bg-green-500/10 text-green-500 text-xs">
+                                        {reply.author.split(' ').map(n => n[0]).join('')}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex-1">
+                                      <div className="flex items-center gap-2 mb-1">
+                                        <span className="font-semibold text-xs">{reply.author}</span>
+                                        <span className="text-xs text-slate-500">{reply.department}</span>
+                                      </div>
+                                      <p className="text-xs text-slate-300">{reply.content}</p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )) || (
+                      <p className="text-sm text-slate-500 italic">No comments yet. Be the first to comment!</p>
+                    )}
+                  </div>
                 </div>
               </div>
             </ScrollArea>
